@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
 <title>Real Reasons AR — 02 MG-ADL Explode</title>
 <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-<script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@ar-js-org/ar.js@3.4.7/aframe/build/aframe-ar.js"></script>
 <style>
   html,body{margin:0;padding:0;background:#0d0c0a;color:#f5efe0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;height:100%;overflow:hidden}
   #hint{position:fixed;left:0;right:0;bottom:24px;text-align:center;z-index:9999;pointer-events:none;text-shadow:0 1px 4px rgba(0,0,0,.6);font-size:14px;letter-spacing:.04em}
@@ -15,6 +15,7 @@
 </style>
 </head>
 <body>
+<div id="status-pill" style="position:fixed;top:14px;right:14px;z-index:99999;background:rgba(0,0,0,.7);border:1px solid rgba(245,239,224,.35);color:#f5efe0;padding:8px 12px;border-radius:999px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-family:-apple-system,sans-serif;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);max-width:60vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Loading…</div>
 <a id="back" href="index.html">← All prototypes</a>
 <div id="hint">Point at the <b>HIRO marker</b>. The cube becomes the <b>8 MG-ADL items</b>.</div>
 
@@ -136,5 +137,32 @@
 
   document.getElementById('marker').addEventListener('markerFound', runSequence);
 </script>
+<script>
+(function(){
+  var pill = document.getElementById('status-pill');
+  function set(msg, err){
+    if(!pill) return;
+    pill.textContent = msg;
+    pill.style.borderColor = err ? '#ff7171' : 'rgba(212,179,110,.7)';
+    pill.style.color = err ? '#ffb3b3' : '#d4b36e';
+  }
+  window.addEventListener('error', function(e){ set('Script error: ' + ((e && e.message)||'').slice(0,40), true); });
+  document.addEventListener('DOMContentLoaded', function(){
+    set('Loading scripts…');
+    var scene = document.querySelector('a-scene');
+    if(scene){
+      scene.addEventListener('loaded', function(){ set('Scene loaded'); });
+      scene.addEventListener('arjs-video-loaded', function(){ set('Camera live ✓'); });
+    }
+    setTimeout(function(){
+      var v = document.querySelector('video');
+      if(!v) set('No video element — script failed to load', true);
+      else if(!v.srcObject) set('No camera stream — check Safari camera permission', true);
+      else if(v.paused) set('Camera paused — tap screen', true);
+    }, 7000);
+  });
+})();
+</script>
+<!-- status-pill-js -->
 </body>
 </html>
