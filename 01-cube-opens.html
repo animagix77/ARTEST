@@ -21,7 +21,7 @@
 <button id="replay">↻ Replay</button>
 <div id="hint">Tap anywhere to <b>replay</b></div>
 
-<a-scene background="color: #0d0c0a" vr-mode-ui="enabled: false" renderer="antialias: true; colorManagement: true">
+<a-scene vr-mode-ui="enabled: false" renderer="antialias: true; colorManagement: true; clearColor: #0d0c0a; clearAlpha: 1">
   <a-assets>
     <img id="portraitTexture" crossorigin="anonymous" src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=600&h=600&fit=crop&crop=faces" />
   </a-assets>
@@ -122,6 +122,14 @@
   function manualReplay(){ busy = false; play(); }
   document.getElementById('replay').addEventListener('click', manualReplay);
   document.body.addEventListener('click', (e) => { if(e.target.id !== 'back' && e.target.id !== 'replay') manualReplay(); });
+</script>
+<script>
+document.querySelector('a-scene').addEventListener('loaded', function(){
+  var s = document.querySelector('a-scene');
+  if(s && s.renderer && s.renderer.setClearColor){
+    s.renderer.setClearColor('#0d0c0a', 1);
+  }
+});
 </script>
 </body>
 </html>

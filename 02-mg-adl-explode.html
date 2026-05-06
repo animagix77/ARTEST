@@ -21,7 +21,7 @@
 <button id="replay">↻ Replay</button>
 <div id="hint">The cube becomes the <b>8 MG-ADL items</b></div>
 
-<a-scene background="color: #0d0c0a" vr-mode-ui="enabled: false" renderer="antialias: true; colorManagement: true">
+<a-scene vr-mode-ui="enabled: false" renderer="antialias: true; colorManagement: true; clearColor: #0d0c0a; clearAlpha: 1">
   <a-light type="ambient" color="#3a2a18" intensity="0.45"></a-light>
   <a-light type="directional" position="3 5 4" color="#fff5dc" intensity="0.7"></a-light>
   <a-light type="point" position="-2 2 3" color="#d4b36e" intensity="0.5" distance="8"></a-light>
@@ -133,6 +133,14 @@
   function manualReplay(){ busy = false; play(); }
   document.getElementById('replay').addEventListener('click', manualReplay);
   document.body.addEventListener('click', (e) => { if(e.target.id !== 'back' && e.target.id !== 'replay') manualReplay(); });
+</script>
+<script>
+document.querySelector('a-scene').addEventListener('loaded', function(){
+  var s = document.querySelector('a-scene');
+  if(s && s.renderer && s.renderer.setClearColor){
+    s.renderer.setClearColor('#0d0c0a', 1);
+  }
+});
 </script>
 </body>
 </html>
