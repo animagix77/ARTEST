@@ -13,6 +13,31 @@
   #back{position:fixed;top:14px;left:14px;z-index:9999;background:rgba(0,0,0,.5);color:#f5efe0;padding:8px 12px;border-radius:999px;text-decoration:none;font-size:12px;letter-spacing:.06em;text-transform:uppercase;border:1px solid rgba(245,239,224,.2)}
   .a-enter-vr,.a-enter-ar{display:none !important}
 </style>
+<script>
+// Force-prime camera permission early. AR.js sometimes silently fails to call getUserMedia.
+window.addEventListener('DOMContentLoaded', function(){
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({video: { facingMode: 'environment' }}).then(function(stream){
+      console.log('[probe] camera permission granted');
+      var pill = document.getElementById('status-pill');
+      if (pill && pill.textContent.indexOf('Camera live') === -1) {
+        pill.textContent = 'Camera primed — waiting AR.js';
+        pill.style.color = '#d4b36e';
+      }
+      // Don't stop the stream — let AR.js find and reuse it
+      window._primedStream = stream;
+    }).catch(function(err){
+      console.error('[probe] camera failed:', err.name, err.message);
+      var pill = document.getElementById('status-pill');
+      if (pill) {
+        pill.textContent = 'Camera ' + err.name + ' — ' + err.message.slice(0,30);
+        pill.style.color = '#ffb3b3';
+        pill.style.borderColor = '#ff7171';
+      }
+    });
+  }
+});
+</script>
 </head>
 <body>
 <div id="status-pill" style="position:fixed;top:14px;right:14px;z-index:99999;background:rgba(0,0,0,.7);border:1px solid rgba(245,239,224,.35);color:#f5efe0;padding:8px 12px;border-radius:999px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-family:-apple-system,sans-serif;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);max-width:60vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Loading…</div>
