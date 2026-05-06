@@ -2,96 +2,61 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
-<title>Real Reasons AR — 04 Voice Cube</title>
-<script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@ar-js-org/ar.js@3.4.7/aframe/build/aframe-ar.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover" />
+<title>Real Reasons — 04 Voice Cube</title>
+<script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
 <style>
-  html,body{margin:0;padding:0;background:#0d0c0a;color:#f5efe0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;height:100%;overflow:hidden}
-  #hint{position:fixed;left:0;right:0;bottom:24px;text-align:center;z-index:9999;pointer-events:none;text-shadow:0 1px 4px rgba(0,0,0,.6);font-size:14px;letter-spacing:.04em}
-  #hint b{color:#d4b36e}
-  #back{position:fixed;top:14px;left:14px;z-index:9999;background:rgba(0,0,0,.5);color:#f5efe0;padding:8px 12px;border-radius:999px;text-decoration:none;font-size:12px;letter-spacing:.06em;text-transform:uppercase;border:1px solid rgba(245,239,224,.2)}
-  #start{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9999;background:#d4b36e;color:#0d0c0a;border:none;padding:18px 28px;border-radius:999px;font-size:14px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;box-shadow:0 8px 32px rgba(212,179,110,.4);cursor:pointer}
-  .a-enter-vr,.a-enter-ar{display:none !important}
+  html,body{margin:0;padding:0;color:#f5efe0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;height:100%;overflow:hidden;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+  body{background:radial-gradient(ellipse at center,#1c1812 0%,#0d0c0a 55%,#050403 100%)}
+  a-scene{position:fixed;inset:0;width:100vw !important;height:100vh !important}
+  #hint{position:fixed;left:0;right:0;bottom:max(28px,env(safe-area-inset-bottom));text-align:center;z-index:9999;pointer-events:none;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:rgba(245,239,224,.55);font-weight:500}
+  #hint b{color:#d4b36e;letter-spacing:.18em}
+  #back{position:fixed;top:max(14px,env(safe-area-inset-top));left:14px;z-index:9999;background:rgba(0,0,0,.5);color:#f5efe0;padding:8px 12px;border-radius:999px;text-decoration:none;font-size:11px;letter-spacing:.08em;text-transform:uppercase;border:1px solid rgba(245,239,224,.2);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+  #replay{position:fixed;top:max(14px,env(safe-area-inset-top));right:14px;z-index:9999;background:rgba(212,179,110,.12);color:#d4b36e;padding:8px 14px;border-radius:999px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;border:1px solid rgba(212,179,110,.5);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);cursor:pointer;font-weight:600;font-family:inherit;display:none}
+  #replay.show{display:block}
+  #start{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9999;background:#d4b36e;color:#0d0c0a;border:none;padding:18px 30px;border-radius:999px;font-size:13px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;box-shadow:0 8px 32px rgba(212,179,110,.4);cursor:pointer;font-family:inherit}
   body.started #start{display:none}
   body:not(.started) #hint{display:none}
+  body:not(.started) #replay{display:none !important}
+  .a-enter-vr,.a-enter-ar{display:none !important}
 </style>
-<script>
-// Force-prime camera permission early. AR.js sometimes silently fails to call getUserMedia.
-window.addEventListener('DOMContentLoaded', function(){
-  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    navigator.mediaDevices.getUserMedia({video: { facingMode: 'environment' }}).then(function(stream){
-      console.log('[probe] camera permission granted');
-      var pill = document.getElementById('status-pill');
-      if (pill && pill.textContent.indexOf('Camera live') === -1) {
-        pill.textContent = 'Camera primed — waiting AR.js';
-        pill.style.color = '#d4b36e';
-      }
-      // Don't stop the stream — let AR.js find and reuse it
-      window._primedStream = stream;
-    }).catch(function(err){
-      console.error('[probe] camera failed:', err.name, err.message);
-      var pill = document.getElementById('status-pill');
-      if (pill) {
-        pill.textContent = 'Camera ' + err.name + ' — ' + err.message.slice(0,30);
-        pill.style.color = '#ffb3b3';
-        pill.style.borderColor = '#ff7171';
-      }
-    });
-  }
-});
-</script>
 </head>
 <body>
-<div id="status-pill" style="position:fixed;top:14px;right:14px;z-index:99999;background:rgba(0,0,0,.7);border:1px solid rgba(245,239,224,.35);color:#f5efe0;padding:8px 12px;border-radius:999px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-family:-apple-system,sans-serif;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);max-width:60vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Loading…</div>
-<a id="back" href="index.html">← All prototypes</a>
-<button id="start">Tap to enable voice + camera</button>
-<div id="hint">Point at the <b>HIRO marker</b>. The cube will <b>speak</b>.</div>
+<a id="back" href="index.html">← All</a>
+<button id="replay">↻ Replay</button>
+<button id="start">▶ Tap to begin</button>
+<div id="hint">The cube will <b>speak</b></div>
 
-<a-scene
-  embedded
-  vr-mode-ui="enabled: false"
-  arjs="sourceType: webcam; debugUIEnabled: false;"
-  renderer="antialias: true; alpha: true;">
+<a-scene background="color: transparent" vr-mode-ui="enabled: false" renderer="antialias: true; alpha: true; colorManagement: true">
+  <a-light type="ambient" color="#3a2a18" intensity="0.45"></a-light>
+  <a-light type="directional" position="3 5 4" color="#fff5dc" intensity="0.65"></a-light>
+  <a-light type="point" position="0 0 3" color="#d4b36e" intensity="0.7" distance="6"></a-light>
 
-  <a-marker preset="hiro" id="marker">
+  <a-camera position="0 0 4.5" wasd-controls-enabled="false" look-controls-enabled="false"></a-camera>
 
-    <!-- Voice cube: glowing, breathing -->
-    <a-entity id="voice-cube" position="0 0.6 0">
-      <a-box id="cube-body" width="1" height="1" depth="1"
-             material="color:#d4b36e; opacity:.9; transparent:true; emissive:#d4b36e; emissiveIntensity:.55"
-             animation__breathe="property: scale; to: 1.06 1.06 1.06; dir: alternate; loop: true; dur: 1800; easing: easeInOutSine"
-             animation__spin="property: rotation; to: 0 360 0; loop: true; dur: 14000; easing: linear"></a-box>
+  <!-- Voice cube -->
+  <a-entity id="voice-cube" position="0 0 0">
+    <a-box id="cube-body" width="1.3" height="1.3" depth="1.3"
+           material="color:#d4b36e; opacity:.92; transparent:true; emissive:#d4b36e; emissiveIntensity:.6"
+           animation__breathe="property: scale; to: 1.06 1.06 1.06; dir: alternate; loop: true; dur: 1800; easing: easeInOutSine"
+           animation__spin="property: rotation; to: 0 360 0; loop: true; dur: 18000; easing: linear"></a-box>
 
-      <!-- Concentric pulse rings while speaking -->
-      <a-ring id="ring1" radius-inner="0.6" radius-outer="0.62" position="0 0 0"
-              material="color:#d4b36e; emissive:#d4b36e; emissiveIntensity:1; opacity:0; transparent:true; side:double"
-              rotation="-90 0 0"></a-ring>
-      <a-ring id="ring2" radius-inner="0.85" radius-outer="0.87" position="0 0 0"
-              material="color:#d4b36e; emissive:#d4b36e; emissiveIntensity:1; opacity:0; transparent:true; side:double"
-              rotation="-90 0 0"></a-ring>
-      <a-ring id="ring3" radius-inner="1.10" radius-outer="1.12" position="0 0 0"
-              material="color:#d4b36e; emissive:#d4b36e; emissiveIntensity:1; opacity:0; transparent:true; side:double"
-              rotation="-90 0 0"></a-ring>
+    <!-- Concentric pulse rings -->
+    <a-ring id="ring1" radius-inner="0.95" radius-outer="0.97" position="0 0 0" rotation="-90 0 0"
+            material="color:#d4b36e; emissive:#d4b36e; emissiveIntensity:1; opacity:0; transparent:true; side:double"></a-ring>
+    <a-ring id="ring2" radius-inner="1.30" radius-outer="1.32" position="0 0 0" rotation="-90 0 0"
+            material="color:#d4b36e; emissive:#d4b36e; emissiveIntensity:1; opacity:0; transparent:true; side:double"></a-ring>
+    <a-ring id="ring3" radius-inner="1.65" radius-outer="1.67" position="0 0 0" rotation="-90 0 0"
+            material="color:#d4b36e; emissive:#d4b36e; emissiveIntensity:1; opacity:0; transparent:true; side:double"></a-ring>
 
-      <!-- Caption that updates with speech -->
-      <a-text id="speak-caption" value=""
-              position="0 -0.95 0" align="center" width="2.6"
-              color="#f5efe0" font="https://cdn.aframe.io/fonts/mozillavr.fnt"
-              opacity="0"></a-text>
-      <a-text id="speak-name" value="MARCUS — gMG since 2017"
-              position="0 0.9 0" align="center" width="2.6"
-              color="#d4b36e" font="https://cdn.aframe.io/fonts/mozillavr.fnt"
-              opacity="0"></a-text>
-    </a-entity>
-
-  </a-marker>
-
-  <a-entity camera></a-entity>
+    <a-text id="speak-name" value="MARCUS  ·  gMG SINCE 2017"
+            position="0 1.4 0" align="center" width="4" color="#d4b36e" opacity="0"></a-text>
+    <a-text id="speak-caption" value="" wrap-count="32"
+            position="0 -1.4 0" align="center" width="4.5" color="#f5efe0" opacity="0"></a-text>
+  </a-entity>
 </a-scene>
 
 <script>
-  // Lines spoken by the cube
   const LINES = [
     "Real Reason number five.",
     "I'm presenting at work again.",
@@ -99,58 +64,54 @@ window.addEventListener('DOMContentLoaded', function(){
     "I'm not the patient in the room. I'm the man.",
   ];
 
-  let running = false;
   let started = false;
-  let voicesReady = false;
+  let speaking = false;
 
-  function pickVoice() {
+  function pickVoice(){
     const all = speechSynthesis.getVoices();
-    return all.find(v => /en[-_]US/i.test(v.lang) && /male|david|alex|daniel/i.test(v.name)) ||
+    return all.find(v => /en[-_]US/i.test(v.lang) && /male|david|alex|daniel|fred/i.test(v.name)) ||
            all.find(v => /en/i.test(v.lang)) || all[0];
   }
-  speechSynthesis.onvoiceschanged = () => { voicesReady = true; };
+  speechSynthesis.onvoiceschanged = () => { speechSynthesis.getVoices(); };
 
-  function pulseRings() {
+  function pulseRings(){
     ['ring1','ring2','ring3'].forEach((id, i) => {
       const el = document.getElementById(id);
       el.removeAttribute('animation__pulse');
       setTimeout(() => {
-        el.setAttribute('animation__pulse',
-          'property: material.opacity; from: 0.9; to: 0; dur: 1400; easing: easeOutCubic');
+        el.setAttribute('animation__pulse','property: material.opacity; from: 0.85; to: 0; dur: 1500; easing: easeOutCubic');
       }, i * 280);
     });
   }
 
-  function speakSequence() {
-    if (!started) return;
-    if (running) return;
-    running = true;
-
+  function speak(){
+    if(speaking) return;
+    speaking = true;
     const cap = document.getElementById('speak-caption');
     const nm  = document.getElementById('speak-name');
     nm.setAttribute('animation__in', 'property: opacity; from: 0; to: 1; dur: 600');
 
     let i = 0;
-    function next() {
-      if (i >= LINES.length) {
-        // reset
-        nm.setAttribute('animation__out','property: opacity; from: 1; to: 0; dur: 600');
-        cap.setAttribute('animation__out','property: opacity; from: 1; to: 0; dur: 600');
-        setTimeout(() => { running = false; }, 1500);
+    function next(){
+      if(i >= LINES.length){
+        nm.setAttribute('animation__out','property: opacity; from: 1; to: 0; dur: 600; delay: 800');
+        cap.setAttribute('animation__out','property: opacity; from: 1; to: 0; dur: 600; delay: 800');
+        setTimeout(() => { speaking = false; }, 1800);
         return;
       }
       const line = LINES[i++];
       cap.setAttribute('value', line);
-      cap.setAttribute('animation__line', 'property: opacity; from: 0; to: 1; dur: 350');
+      cap.setAttribute('animation__line','property: opacity; from: 0; to: 1; dur: 350');
+      pulseRings();
 
       const u = new SpeechSynthesisUtterance(line);
       const v = pickVoice();
-      if (v) u.voice = v;
-      u.rate = 0.92;
-      u.pitch = 0.95;
-      u.volume = 1;
-      u.onstart = pulseRings;
-      u.onend = () => setTimeout(next, 600);
+      if(v) u.voice = v;
+      u.rate = 0.92; u.pitch = 0.95; u.volume = 1;
+      u.onend = () => setTimeout(next, 700);
+      // fallback if onend doesn't fire
+      const fallback = setTimeout(next, 4500);
+      u.onend = () => { clearTimeout(fallback); setTimeout(next, 700); };
       speechSynthesis.speak(u);
     }
     next();
@@ -159,44 +120,19 @@ window.addEventListener('DOMContentLoaded', function(){
   document.getElementById('start').addEventListener('click', () => {
     started = true;
     document.body.classList.add('started');
-    // Warm up speech synth on iOS — it requires a user gesture
+    document.getElementById('replay').classList.add('show');
+    // Warm up speech synth
     const warmup = new SpeechSynthesisUtterance(' ');
     warmup.volume = 0;
     speechSynthesis.speak(warmup);
-    // Force voices to populate
     speechSynthesis.getVoices();
+    setTimeout(speak, 400);
   });
 
-  document.getElementById('marker').addEventListener('markerFound', () => {
-    if (started) speakSequence();
+  document.getElementById('replay').addEventListener('click', () => {
+    if(speaking){ speechSynthesis.cancel(); speaking = false; }
+    setTimeout(speak, 200);
   });
 </script>
-<script>
-(function(){
-  var pill = document.getElementById('status-pill');
-  function set(msg, err){
-    if(!pill) return;
-    pill.textContent = msg;
-    pill.style.borderColor = err ? '#ff7171' : 'rgba(212,179,110,.7)';
-    pill.style.color = err ? '#ffb3b3' : '#d4b36e';
-  }
-  window.addEventListener('error', function(e){ set('Script error: ' + ((e && e.message)||'').slice(0,40), true); });
-  document.addEventListener('DOMContentLoaded', function(){
-    set('Loading scripts…');
-    var scene = document.querySelector('a-scene');
-    if(scene){
-      scene.addEventListener('loaded', function(){ set('Scene loaded'); });
-      scene.addEventListener('arjs-video-loaded', function(){ set('Camera live ✓'); });
-    }
-    setTimeout(function(){
-      var v = document.querySelector('video');
-      if(!v) set('No video element — script failed to load', true);
-      else if(!v.srcObject) set('No camera stream — check Safari camera permission', true);
-      else if(v.paused) set('Camera paused — tap screen', true);
-    }, 7000);
-  });
-})();
-</script>
-<!-- status-pill-js -->
 </body>
 </html>

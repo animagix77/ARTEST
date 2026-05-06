@@ -2,71 +2,40 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
-<title>Real Reasons AR — 02 MG-ADL Explode</title>
-<script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@ar-js-org/ar.js@3.4.7/aframe/build/aframe-ar.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover" />
+<title>Real Reasons — 02 MG-ADL Explode</title>
+<script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
 <style>
-  html,body{margin:0;padding:0;background:#0d0c0a;color:#f5efe0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;height:100%;overflow:hidden}
-  #hint{position:fixed;left:0;right:0;bottom:24px;text-align:center;z-index:9999;pointer-events:none;text-shadow:0 1px 4px rgba(0,0,0,.6);font-size:14px;letter-spacing:.04em}
-  #hint b{color:#d4b36e}
-  #back{position:fixed;top:14px;left:14px;z-index:9999;background:rgba(0,0,0,.5);color:#f5efe0;padding:8px 12px;border-radius:999px;text-decoration:none;font-size:12px;letter-spacing:.06em;text-transform:uppercase;border:1px solid rgba(245,239,224,.2)}
+  html,body{margin:0;padding:0;color:#f5efe0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;height:100%;overflow:hidden;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+  body{background:radial-gradient(ellipse at center,#1c1812 0%,#0d0c0a 55%,#050403 100%)}
+  a-scene{position:fixed;inset:0;width:100vw !important;height:100vh !important}
+  #hint{position:fixed;left:0;right:0;bottom:max(28px,env(safe-area-inset-bottom));text-align:center;z-index:9999;pointer-events:none;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:rgba(245,239,224,.55);font-weight:500}
+  #hint b{color:#d4b36e;letter-spacing:.18em}
+  #back{position:fixed;top:max(14px,env(safe-area-inset-top));left:14px;z-index:9999;background:rgba(0,0,0,.5);color:#f5efe0;padding:8px 12px;border-radius:999px;text-decoration:none;font-size:11px;letter-spacing:.08em;text-transform:uppercase;border:1px solid rgba(245,239,224,.2);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+  #replay{position:fixed;top:max(14px,env(safe-area-inset-top));right:14px;z-index:9999;background:rgba(212,179,110,.12);color:#d4b36e;padding:8px 14px;border-radius:999px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;border:1px solid rgba(212,179,110,.5);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);cursor:pointer;font-weight:600;font-family:inherit}
   .a-enter-vr,.a-enter-ar{display:none !important}
 </style>
-<script>
-// Force-prime camera permission early. AR.js sometimes silently fails to call getUserMedia.
-window.addEventListener('DOMContentLoaded', function(){
-  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    navigator.mediaDevices.getUserMedia({video: { facingMode: 'environment' }}).then(function(stream){
-      console.log('[probe] camera permission granted');
-      var pill = document.getElementById('status-pill');
-      if (pill && pill.textContent.indexOf('Camera live') === -1) {
-        pill.textContent = 'Camera primed — waiting AR.js';
-        pill.style.color = '#d4b36e';
-      }
-      // Don't stop the stream — let AR.js find and reuse it
-      window._primedStream = stream;
-    }).catch(function(err){
-      console.error('[probe] camera failed:', err.name, err.message);
-      var pill = document.getElementById('status-pill');
-      if (pill) {
-        pill.textContent = 'Camera ' + err.name + ' — ' + err.message.slice(0,30);
-        pill.style.color = '#ffb3b3';
-        pill.style.borderColor = '#ff7171';
-      }
-    });
-  }
-});
-</script>
 </head>
 <body>
-<div id="status-pill" style="position:fixed;top:14px;right:14px;z-index:99999;background:rgba(0,0,0,.7);border:1px solid rgba(245,239,224,.35);color:#f5efe0;padding:8px 12px;border-radius:999px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-family:-apple-system,sans-serif;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);max-width:60vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Loading…</div>
-<a id="back" href="index.html">← All prototypes</a>
-<div id="hint">Point at the <b>HIRO marker</b>. The cube becomes the <b>8 MG-ADL items</b>.</div>
+<a id="back" href="index.html">← All</a>
+<button id="replay">↻ Replay</button>
+<div id="hint">The cube becomes the <b>8 MG-ADL items</b></div>
 
-<a-scene
-  embedded
-  vr-mode-ui="enabled: false"
-  arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
-  renderer="antialias: true; alpha: true;">
+<a-scene background="color: transparent" vr-mode-ui="enabled: false" renderer="antialias: true; alpha: true; colorManagement: true">
+  <a-light type="ambient" color="#3a2a18" intensity="0.45"></a-light>
+  <a-light type="directional" position="3 5 4" color="#fff5dc" intensity="0.7"></a-light>
+  <a-light type="point" position="-2 2 3" color="#d4b36e" intensity="0.5" distance="8"></a-light>
 
-  <a-marker preset="hiro" id="marker">
+  <a-camera position="0 0 5" wasd-controls-enabled="false" look-controls-enabled="false"></a-camera>
 
-    <!-- Parent cube that splits -->
-    <a-entity id="parent-cube" position="0 0.5 0">
-      <a-box width="1" height="1" depth="1"
-             material="color:#d4b36e; opacity:.85; transparent:true; emissive:#3a2a10; emissiveIntensity:.3"
-             animation__spin="property: rotation; to: 0 360 0; loop: true; dur: 6000; easing: linear"></a-box>
-    </a-entity>
+  <!-- Parent cube -->
+  <a-entity id="parent-cube" position="0 0 0">
+    <a-box width="1" height="1" depth="1" material="color:#d4b36e; opacity:.9; transparent:true; emissive:#3a2a10; emissiveIntensity:.4"
+           animation__spin="property: rotation; to: 0 360 0; loop: true; dur: 7000; easing: linear"></a-box>
+  </a-entity>
 
-    <!-- 8 MG-ADL mini cubes, will be revealed -->
-    <a-entity id="mini-cubes" visible="false">
-      <!-- arranged in a ring around the marker, slightly above -->
-    </a-entity>
-
-  </a-marker>
-
-  <a-entity camera></a-entity>
+  <!-- 8 mini cubes container -->
+  <a-entity id="mini-cubes" position="0 0 0" visible="false"></a-entity>
 </a-scene>
 
 <script>
@@ -80,114 +49,90 @@ window.addEventListener('DOMContentLoaded', function(){
     { label: "EYELID",    color: "#9c7e3e" },
     { label: "VISION",    color: "#bfa05a" },
   ];
+  const RADIUS = 1.9;
 
   const container = document.getElementById('mini-cubes');
-  const RADIUS = 1.4;
-  const HEIGHT = 0.6;
-
   ITEMS.forEach((item, i) => {
     const angle = (i / ITEMS.length) * Math.PI * 2;
     const x = Math.cos(angle) * RADIUS;
-    const z = Math.sin(angle) * RADIUS;
-    const yawDeg = -(angle * 180 / Math.PI) + 90;
-
+    const y = Math.sin(angle) * RADIUS * 0.55;
     const wrap = document.createElement('a-entity');
-    wrap.setAttribute('position', `${x} ${HEIGHT} ${z}`);
-    wrap.setAttribute('rotation', `0 ${yawDeg} 0`);
+    wrap.dataset.targetX = x.toFixed(3);
+    wrap.dataset.targetY = y.toFixed(3);
+    wrap.setAttribute('position', '0 0 0');
 
-    // floating cube
     const box = document.createElement('a-box');
-    box.setAttribute('width', '0.45');
-    box.setAttribute('height', '0.45');
-    box.setAttribute('depth', '0.45');
-    box.setAttribute('material', `color:${item.color}; opacity:.9; transparent:true; emissive:${item.color}; emissiveIntensity:.25`);
-    box.setAttribute('animation__bob', `property: position; to: 0 0.08 0; dir: alternate; loop: true; dur: ${1800 + i*120}; easing: easeInOutSine`);
-    box.setAttribute('animation__spin', `property: rotation; to: 0 360 0; loop: true; dur: ${5000 + i*300}; easing: linear`);
+    box.setAttribute('width','0.55');
+    box.setAttribute('height','0.55');
+    box.setAttribute('depth','0.55');
+    box.setAttribute('material', `color:${item.color}; opacity:.92; transparent:true; emissive:${item.color}; emissiveIntensity:.3`);
+    box.setAttribute('animation__bob', `property: position; to: 0 0.12 0; dir: alternate; loop: true; dur: ${1800 + i*120}; easing: easeInOutSine`);
+    box.setAttribute('animation__spin', `property: rotation; to: 0 360 0; loop: true; dur: ${5500 + i*300}; easing: linear`);
     wrap.appendChild(box);
 
-    // label
     const label = document.createElement('a-text');
     label.setAttribute('value', item.label);
-    label.setAttribute('position', '0 -0.45 0');
+    label.setAttribute('position', '0 -0.55 0');
     label.setAttribute('align', 'center');
-    label.setAttribute('width', '2');
+    label.setAttribute('width', '2.4');
     label.setAttribute('color', '#f5efe0');
-    label.setAttribute('font', 'https://cdn.aframe.io/fonts/mozillavr.fnt');
     wrap.appendChild(label);
 
     container.appendChild(wrap);
   });
 
-  let running = false;
-  function runSequence() {
-    if (running) return;
-    running = true;
+  // Slowly rotate the whole ring of cubes
+  container.setAttribute('animation__ring','property: rotation; to: 0 360 0; loop: true; dur: 28000; easing: linear');
 
+  let busy = false;
+  function reset(){
+    busy = false;
+    const parent = document.getElementById('parent-cube');
+    const parentBox = parent.querySelector('a-box');
+    parentBox.removeAttribute('animation__pulse');
+    parentBox.removeAttribute('animation__explode');
+    parentBox.removeAttribute('animation__fade');
+    parentBox.setAttribute('scale','1 1 1');
+    parentBox.setAttribute('material','opacity', 0.9);
+    parent.setAttribute('visible','true');
+    container.setAttribute('visible','false');
+    [...container.children].forEach(w => {
+      w.removeAttribute('animation__deploy');
+      w.setAttribute('position','0 0 0');
+    });
+  }
+
+  function play(){
+    if(busy) return;
+    busy = true;
+    reset();
+    busy = true;
     const parent = document.getElementById('parent-cube');
     const parentBox = parent.querySelector('a-box');
 
-    // Pulse the parent
-    parentBox.setAttribute('animation__pulse', 'property: scale; to: 1.15 1.15 1.15; dir: alternate; loop: 2; dur: 600; easing: easeInOutSine');
-
-    // Then explode/dissolve
+    parentBox.setAttribute('animation__pulse','property: scale; to: 1.18 1.18 1.18; dir: alternate; loop: 2; dur: 700; easing: easeInOutSine');
     setTimeout(() => {
-      parentBox.setAttribute('animation__explode', 'property: scale; to: 0.01 0.01 0.01; dur: 700; easing: easeInQuart');
-      parentBox.setAttribute('animation__fade', 'property: material.opacity; to: 0; dur: 700');
-    }, 1300);
+      parentBox.setAttribute('animation__explode','property: scale; to: 0.01 0.01 0.01; dur: 800; easing: easeInQuart');
+      parentBox.setAttribute('animation__fade','property: material.opacity; to: 0; dur: 800');
+    }, 1500);
 
-    // Reveal mini cubes from center, fly to ring positions
     setTimeout(() => {
-      container.setAttribute('visible', 'true');
-      // Animate each mini-cube wrap from origin to its ring position
-      [...container.children].forEach((wrap, i) => {
-        const targetPos = wrap.getAttribute('position');
-        wrap.setAttribute('position', `0 0.5 0`);
-        wrap.setAttribute('animation__deploy',
-          `property: position; to: ${targetPos.x} ${targetPos.y} ${targetPos.z}; dur: 900; delay: ${i*70}; easing: easeOutCubic`);
+      container.setAttribute('visible','true');
+      [...container.children].forEach((w, i) => {
+        const tx = w.dataset.targetX, ty = w.dataset.targetY;
+        w.setAttribute('position','0 0 0');
+        w.setAttribute('animation__deploy', `property: position; to: ${tx} ${ty} 0; dur: 1100; delay: ${i*70}; easing: easeOutCubic`);
       });
-    }, 2000);
+    }, 2300);
 
-    // Hold, then reset
-    setTimeout(() => {
-      container.setAttribute('visible', 'false');
-      [...container.children].forEach(w => w.removeAttribute('animation__deploy'));
-      parentBox.removeAttribute('animation__explode');
-      parentBox.removeAttribute('animation__fade');
-      parentBox.removeAttribute('animation__pulse');
-      parentBox.setAttribute('scale', '1 1 1');
-      parentBox.setAttribute('material', 'opacity', 0.85);
-      running = false;
-    }, 12000);
+    // Auto-loop
+    setTimeout(() => { busy = false; play(); }, 14000);
   }
 
-  document.getElementById('marker').addEventListener('markerFound', runSequence);
+  document.querySelector('a-scene').addEventListener('loaded', () => setTimeout(play, 400));
+  function manualReplay(){ busy = false; play(); }
+  document.getElementById('replay').addEventListener('click', manualReplay);
+  document.body.addEventListener('click', (e) => { if(e.target.id !== 'back' && e.target.id !== 'replay') manualReplay(); });
 </script>
-<script>
-(function(){
-  var pill = document.getElementById('status-pill');
-  function set(msg, err){
-    if(!pill) return;
-    pill.textContent = msg;
-    pill.style.borderColor = err ? '#ff7171' : 'rgba(212,179,110,.7)';
-    pill.style.color = err ? '#ffb3b3' : '#d4b36e';
-  }
-  window.addEventListener('error', function(e){ set('Script error: ' + ((e && e.message)||'').slice(0,40), true); });
-  document.addEventListener('DOMContentLoaded', function(){
-    set('Loading scripts…');
-    var scene = document.querySelector('a-scene');
-    if(scene){
-      scene.addEventListener('loaded', function(){ set('Scene loaded'); });
-      scene.addEventListener('arjs-video-loaded', function(){ set('Camera live ✓'); });
-    }
-    setTimeout(function(){
-      var v = document.querySelector('video');
-      if(!v) set('No video element — script failed to load', true);
-      else if(!v.srcObject) set('No camera stream — check Safari camera permission', true);
-      else if(v.paused) set('Camera paused — tap screen', true);
-    }, 7000);
-  });
-})();
-</script>
-<!-- status-pill-js -->
 </body>
 </html>

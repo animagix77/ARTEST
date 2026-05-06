@@ -2,177 +2,129 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
-<title>Real Reasons AR — 03 Portal Cube</title>
-<script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@ar-js-org/ar.js@3.4.7/aframe/build/aframe-ar.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover" />
+<title>Real Reasons — 03 Portal Cube</title>
+<script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
 <style>
-  html,body{margin:0;padding:0;background:#0d0c0a;color:#f5efe0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;height:100%;overflow:hidden}
-  #hint{position:fixed;left:0;right:0;bottom:24px;text-align:center;z-index:9999;pointer-events:none;text-shadow:0 1px 4px rgba(0,0,0,.6);font-size:14px;letter-spacing:.04em}
-  #hint b{color:#d4b36e}
-  #back{position:fixed;top:14px;left:14px;z-index:9999;background:rgba(0,0,0,.5);color:#f5efe0;padding:8px 12px;border-radius:999px;text-decoration:none;font-size:12px;letter-spacing:.06em;text-transform:uppercase;border:1px solid rgba(245,239,224,.2)}
+  html,body{margin:0;padding:0;color:#f5efe0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;height:100%;overflow:hidden;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+  body{background:radial-gradient(ellipse at center,#1c1812 0%,#0d0c0a 55%,#050403 100%)}
+  a-scene{position:fixed;inset:0;width:100vw !important;height:100vh !important}
+  #hint{position:fixed;left:0;right:0;bottom:max(28px,env(safe-area-inset-bottom));text-align:center;z-index:9999;pointer-events:none;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:rgba(245,239,224,.55);font-weight:500}
+  #hint b{color:#d4b36e;letter-spacing:.18em}
+  #back{position:fixed;top:max(14px,env(safe-area-inset-top));left:14px;z-index:9999;background:rgba(0,0,0,.5);color:#f5efe0;padding:8px 12px;border-radius:999px;text-decoration:none;font-size:11px;letter-spacing:.08em;text-transform:uppercase;border:1px solid rgba(245,239,224,.2);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+  #replay{position:fixed;top:max(14px,env(safe-area-inset-top));right:14px;z-index:9999;background:rgba(212,179,110,.12);color:#d4b36e;padding:8px 14px;border-radius:999px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;border:1px solid rgba(212,179,110,.5);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);cursor:pointer;font-weight:600;font-family:inherit}
   .a-enter-vr,.a-enter-ar{display:none !important}
 </style>
-<script>
-// Force-prime camera permission early. AR.js sometimes silently fails to call getUserMedia.
-window.addEventListener('DOMContentLoaded', function(){
-  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    navigator.mediaDevices.getUserMedia({video: { facingMode: 'environment' }}).then(function(stream){
-      console.log('[probe] camera permission granted');
-      var pill = document.getElementById('status-pill');
-      if (pill && pill.textContent.indexOf('Camera live') === -1) {
-        pill.textContent = 'Camera primed — waiting AR.js';
-        pill.style.color = '#d4b36e';
-      }
-      // Don't stop the stream — let AR.js find and reuse it
-      window._primedStream = stream;
-    }).catch(function(err){
-      console.error('[probe] camera failed:', err.name, err.message);
-      var pill = document.getElementById('status-pill');
-      if (pill) {
-        pill.textContent = 'Camera ' + err.name + ' — ' + err.message.slice(0,30);
-        pill.style.color = '#ffb3b3';
-        pill.style.borderColor = '#ff7171';
-      }
-    });
-  }
-});
-</script>
 </head>
 <body>
-<div id="status-pill" style="position:fixed;top:14px;right:14px;z-index:99999;background:rgba(0,0,0,.7);border:1px solid rgba(245,239,224,.35);color:#f5efe0;padding:8px 12px;border-radius:999px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-family:-apple-system,sans-serif;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);max-width:60vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Loading…</div>
-<a id="back" href="index.html">← All prototypes</a>
-<div id="hint">Point at the <b>HIRO marker</b>. The cube becomes a <b>window into a patient's day</b>.</div>
+<a id="back" href="index.html">← All</a>
+<button id="replay">↻ Replay</button>
+<div id="hint">A window into a <b>patient's morning</b></div>
 
-<a-scene
-  embedded
-  vr-mode-ui="enabled: false"
-  arjs="sourceType: webcam; debugUIEnabled: false;"
-  renderer="antialias: true; alpha: true;">
+<a-scene background="color: transparent" vr-mode-ui="enabled: false" renderer="antialias: true; alpha: true; colorManagement: true">
+  <a-light type="ambient" color="#3a2a18" intensity="0.35"></a-light>
+  <a-light type="directional" position="3 5 4" color="#fff5dc" intensity="0.5"></a-light>
+  <a-light type="point" position="0 0 3" color="#d4b36e" intensity="0.6" distance="6"></a-light>
 
-  <a-marker preset="hiro" id="marker">
+  <a-camera id="cam" position="0 0 5" wasd-controls-enabled="false" look-controls-enabled="false"></a-camera>
 
-    <!-- The cube frame (hollow, only edges visible) -->
-    <a-entity id="frame" position="0 0.5 0">
-      <a-box width="1" height="1" depth="1"
-             material="color:#d4b36e; opacity:0.18; transparent:true; emissive:#d4b36e; emissiveIntensity:.35; side: double"
-             animation__hover="property: position; to: 0 0.55 0; dir: alternate; loop: true; dur: 2400; easing: easeInOutSine"></a-box>
+  <!-- Cube frame (translucent shell) -->
+  <a-entity id="frame" position="0 0 0">
+    <a-box id="cube-shell" width="1.4" height="1.4" depth="1.4"
+           material="color:#d4b36e; opacity:0.22; transparent:true; emissive:#d4b36e; emissiveIntensity:.4; side: double"
+           animation__hover="property: position; to: 0 0.05 0; dir: alternate; loop: true; dur: 2400; easing: easeInOutSine"
+           animation__spin="property: rotation; to: 0 360 0; loop: true; dur: 22000; easing: linear"></a-box>
 
-      <!-- The portal "front face" — a window cut through to the inside -->
-      <a-plane id="portal-glass" position="0 0 0.501" width="0.85" height="0.85"
-               material="color:#0d0c0a; opacity: 0.0; side: double"></a-plane>
+    <!-- Glowing rim ring -->
+    <a-ring id="rim" radius-inner="0.55" radius-outer="0.7" position="0 0 0.71"
+            material="color:#d4b36e; emissive:#d4b36e; emissiveIntensity:.9; opacity:0; transparent:true; side:double"></a-ring>
 
-      <!-- Inside-the-cube scene: a kitchen-warm gradient + silhouettes -->
-      <a-entity id="inside-scene" visible="false" position="0 0 -0.499">
-        <!-- Warm wall -->
-        <a-plane width="3" height="3" position="0 0 -1.2"
-                 material="color:#b8845a; emissive:#b8845a; emissiveIntensity:.5; side:double"></a-plane>
-        <!-- Window light -->
-        <a-plane width="1.2" height="0.9" position="0.6 0.4 -1.18"
-                 material="color:#f9e3a8; emissive:#f9e3a8; emissiveIntensity:1; side:double"></a-plane>
-        <!-- Counter / silhouette layer -->
-        <a-plane width="3" height="0.6" position="0 -0.6 -0.8"
-                 material="color:#3a1f10; opacity:.95; emissive:#3a1f10; emissiveIntensity:.2; side:double"></a-plane>
-        <!-- Kettle silhouette -->
-        <a-cylinder radius="0.12" height="0.25" position="-0.55 -0.18 -0.6"
-                    material="color:#1a0e08; emissive:#000"></a-cylinder>
-        <!-- Mug -->
-        <a-cylinder radius="0.06" height="0.12" position="-0.15 -0.24 -0.55"
-                    material="color:#1a0e08; emissive:#000"></a-cylinder>
-        <!-- Steam -->
-        <a-sphere radius="0.04" position="-0.15 -0.05 -0.5"
-                  material="color:#f5efe0; opacity:.4; transparent:true"
-                  animation__rise="property: position; to: -0.13 0.25 -0.5; dir: alternate; loop: true; dur: 2200"></a-sphere>
-        <!-- Patient figure silhouette -->
-        <a-plane width="0.5" height="1.0" position="0.35 0 -0.7"
-                 material="color:#1a0e08; opacity:.92; transparent:true; side:double"></a-plane>
-        <!-- Caption -->
-        <a-text value="MORNING. SHE&#39;S MAKING TEA AGAIN." position="0 -0.85 -0.55"
-                align="center" width="2.3" color="#d4b36e"
-                font="https://cdn.aframe.io/fonts/mozillavr.fnt" opacity="0"
-                id="caption"></a-text>
-      </a-entity>
-
-      <!-- Edge glow rim -->
-      <a-entity position="0 0 0.502">
-        <a-ring radius-inner="0.42" radius-outer="0.50" rotation="0 0 0"
-                material="color:#d4b36e; emissive:#d4b36e; emissiveIntensity:.7; opacity:.0; transparent:true; side:double"
-                id="rim"></a-ring>
-      </a-entity>
+    <!-- Inside scene (kitchen vignette) -->
+    <a-entity id="inside" visible="false" position="0 0 0">
+      <!-- Warm wall backdrop -->
+      <a-plane width="3" height="3" position="0 0 -0.7"
+               material="color:#a8754a; emissive:#a8754a; emissiveIntensity:.55; side:double"></a-plane>
+      <!-- Window light glow -->
+      <a-plane width="1.2" height="0.95" position="0.55 0.35 -0.68"
+               material="color:#fadea0; emissive:#fadea0; emissiveIntensity:1.2; side:double"></a-plane>
+      <!-- Counter / silhouette layer -->
+      <a-plane width="3" height="0.5" position="0 -0.55 -0.4"
+               material="color:#3a1f10; emissive:#1a0e08; emissiveIntensity:.2; side:double"></a-plane>
+      <!-- Kettle -->
+      <a-cylinder radius="0.13" height="0.22" position="-0.55 -0.18 -0.3"
+                  material="color:#1a0e08; emissive:#000"></a-cylinder>
+      <!-- Mug -->
+      <a-cylinder radius="0.07" height="0.13" position="-0.15 -0.22 -0.25"
+                  material="color:#1a0e08; emissive:#000"></a-cylinder>
+      <!-- Steam -->
+      <a-sphere radius="0.045" position="-0.15 -0.05 -0.22"
+                material="color:#f5efe0; opacity:.4; transparent:true"
+                animation__rise="property: position; to: -0.13 0.25 -0.22; dir: alternate; loop: true; dur: 2200"></a-sphere>
+      <a-sphere radius="0.035" position="-0.55 0.05 -0.28"
+                material="color:#f5efe0; opacity:.3; transparent:true"
+                animation__rise="property: position; to: -0.53 0.35 -0.28; dir: alternate; loop: true; dur: 2600"></a-sphere>
+      <!-- Patient figure -->
+      <a-plane width="0.45" height="0.95" position="0.35 -0.05 -0.35"
+               material="color:#1a0e08; opacity:.95; transparent:true; side:double"></a-plane>
+      <!-- Caption -->
+      <a-text id="caption" value="MORNING.  SHE'S MAKING TEA AGAIN." position="0 -1.0 0.01"
+              align="center" width="3.2" color="#d4b36e" opacity="0"></a-text>
     </a-entity>
-
-  </a-marker>
-
-  <a-entity camera></a-entity>
+  </a-entity>
 </a-scene>
 
 <script>
-  let running = false;
-  function openPortal() {
-    if (running) return;
-    running = true;
+  const cam = document.getElementById('cam');
+  const inside = document.getElementById('inside');
+  const rim = document.getElementById('rim');
+  const caption = document.getElementById('caption');
+  const cubeShell = document.getElementById('cube-shell');
 
-    const glass = document.getElementById('portal-glass');
-    const inside = document.getElementById('inside-scene');
-    const rim = document.getElementById('rim');
-    const caption = document.getElementById('caption');
-
-    // Step 1: glass darkens / dissolves
-    glass.setAttribute('animation__open', 'property: material.opacity; from: 0; to: 0; dur: 200');
-    rim.setAttribute('animation__rim', 'property: material.opacity; from: 0; to: .9; dur: 600; easing: easeOutQuad');
-
-    // Step 2: inside scene fades in
-    setTimeout(() => {
-      inside.setAttribute('visible', 'true');
-      // pretend "depth zoom" by scaling inside scene up slowly
-      inside.setAttribute('animation__zoom', 'property: scale; from: 0.6 0.6 0.6; to: 1 1 1; dur: 1800; easing: easeOutCubic');
-    }, 400);
-
-    // Step 3: caption fades in
-    setTimeout(() => {
-      caption.setAttribute('animation__caption', 'property: opacity; from: 0; to: 1; dur: 800');
-    }, 1800);
-
-    // Reset
-    setTimeout(() => {
-      inside.setAttribute('visible', 'false');
-      inside.removeAttribute('animation__zoom');
-      caption.setAttribute('opacity', 0);
-      caption.removeAttribute('animation__caption');
-      rim.setAttribute('material', 'opacity', 0);
-      rim.removeAttribute('animation__rim');
-      running = false;
-    }, 9000);
+  let busy = false;
+  function reset(){
+    inside.setAttribute('visible','false');
+    inside.removeAttribute('animation__zoom');
+    inside.setAttribute('scale','0.6 0.6 0.6');
+    rim.removeAttribute('animation__rim');
+    rim.setAttribute('material','opacity', 0);
+    caption.removeAttribute('animation__caption');
+    caption.setAttribute('opacity', 0);
+    cam.removeAttribute('animation__push');
+    cam.setAttribute('position','0 0 5');
+    cubeShell.setAttribute('material','opacity', 0.22);
   }
 
-  document.getElementById('marker').addEventListener('markerFound', openPortal);
-</script>
-<script>
-(function(){
-  var pill = document.getElementById('status-pill');
-  function set(msg, err){
-    if(!pill) return;
-    pill.textContent = msg;
-    pill.style.borderColor = err ? '#ff7171' : 'rgba(212,179,110,.7)';
-    pill.style.color = err ? '#ffb3b3' : '#d4b36e';
+  function play(){
+    if(busy) return;
+    busy = true;
+    reset();
+    // Slow camera push toward cube
+    cam.setAttribute('animation__push','property: position; from: 0 0 5; to: 0 0 1.6; dur: 3500; easing: easeInOutQuad');
+    // Rim glow
+    setTimeout(() => {
+      rim.setAttribute('animation__rim','property: material.opacity; from: 0; to: .95; dur: 900; easing: easeOutQuad');
+    }, 800);
+    // Reveal interior, scale up
+    setTimeout(() => {
+      inside.setAttribute('visible','true');
+      inside.setAttribute('animation__zoom','property: scale; from: 0.5 0.5 0.5; to: 1 1 1; dur: 1800; easing: easeOutCubic');
+    }, 1400);
+    // Cube shell fades a bit so we can see inside
+    setTimeout(() => {
+      cubeShell.setAttribute('animation__fade','property: material.opacity; to: 0.05; dur: 1200');
+    }, 1600);
+    // Caption
+    setTimeout(() => {
+      caption.setAttribute('animation__caption','property: opacity; from: 0; to: 1; dur: 800');
+    }, 3200);
+    // Auto-loop
+    setTimeout(() => { busy = false; play(); }, 11000);
   }
-  window.addEventListener('error', function(e){ set('Script error: ' + ((e && e.message)||'').slice(0,40), true); });
-  document.addEventListener('DOMContentLoaded', function(){
-    set('Loading scripts…');
-    var scene = document.querySelector('a-scene');
-    if(scene){
-      scene.addEventListener('loaded', function(){ set('Scene loaded'); });
-      scene.addEventListener('arjs-video-loaded', function(){ set('Camera live ✓'); });
-    }
-    setTimeout(function(){
-      var v = document.querySelector('video');
-      if(!v) set('No video element — script failed to load', true);
-      else if(!v.srcObject) set('No camera stream — check Safari camera permission', true);
-      else if(v.paused) set('Camera paused — tap screen', true);
-    }, 7000);
-  });
-})();
+
+  document.querySelector('a-scene').addEventListener('loaded', () => setTimeout(play, 400));
+  function manualReplay(){ busy = false; play(); }
+  document.getElementById('replay').addEventListener('click', manualReplay);
+  document.body.addEventListener('click', (e) => { if(e.target.id !== 'back' && e.target.id !== 'replay') manualReplay(); });
 </script>
-<!-- status-pill-js -->
 </body>
 </html>

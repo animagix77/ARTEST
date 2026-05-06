@@ -2,44 +2,37 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Real Reasons — AR Prototype Set</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Real Reasons — Cube Concept Demos</title>
 <style>
   :root{
     --bg:#0d0c0a; --ink:#f5efe0; --gold:#d4b36e; --gold-2:#b89656; --dim:#8a8278; --line:rgba(245,239,224,.12);
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
-  .wrap{max-width:1080px;margin:0 auto;padding:48px 24px 96px}
-  header{padding:24px 0 56px;border-bottom:1px solid var(--line)}
-  .eyebrow{color:var(--gold);font-size:11px;letter-spacing:.3em;text-transform:uppercase;font-weight:600}
-  h1{font-size:clamp(36px,5.5vw,68px);line-height:1.05;margin:14px 0 16px;font-weight:700;letter-spacing:-0.02em}
+  body{background:radial-gradient(ellipse at 30% 0%, #1c1812 0%, #0d0c0a 60%, #050403 100%);min-height:100vh}
+  .wrap{max-width:1080px;margin:0 auto;padding:max(36px,env(safe-area-inset-top)) 24px 96px}
+  header{padding:18px 0 48px;border-bottom:1px solid var(--line)}
+  .eyebrow{color:var(--gold);font-size:11px;letter-spacing:.32em;text-transform:uppercase;font-weight:600}
+  h1{font-size:clamp(36px,6vw,72px);line-height:1.02;margin:14px 0 16px;font-weight:700;letter-spacing:-0.02em}
   h1 em{font-style:normal;color:var(--gold)}
-  .lede{font-size:18px;line-height:1.55;color:#d4cebd;max-width:64ch;margin:0}
+  .lede{font-size:17px;line-height:1.55;color:#d4cebd;max-width:60ch;margin:0}
   .meta{margin-top:24px;color:var(--dim);font-size:13px;letter-spacing:.04em}
-  section{padding:56px 0;border-bottom:1px solid var(--line)}
-  section h2{font-size:14px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);font-weight:600;margin:0 0 28px}
-  .grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
-  .card{display:block;background:#15130f;border:1px solid var(--line);border-radius:14px;padding:24px;text-decoration:none;color:var(--ink);transition:all .25s ease;position:relative;overflow:hidden}
+  section{padding:48px 0;border-bottom:1px solid var(--line)}
+  section h2{font-size:13px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);font-weight:600;margin:0 0 28px}
+  .grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+  .card{display:block;background:#15130f;border:1px solid var(--line);border-radius:14px;padding:22px;text-decoration:none;color:var(--ink);transition:all .25s ease;position:relative;overflow:hidden}
   .card::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 70% at 0% 0%, rgba(212,179,110,.10), transparent 60%);pointer-events:none}
-  .card:hover{border-color:rgba(212,179,110,.45);transform:translateY(-2px)}
-  .card .num{font-size:11px;letter-spacing:.3em;color:var(--gold);text-transform:uppercase}
-  .card h3{font-size:22px;margin:8px 0 10px;font-weight:700;letter-spacing:-0.01em}
+  .card:hover,.card:active{border-color:rgba(212,179,110,.5);transform:translateY(-2px)}
+  .card .num{font-size:11px;letter-spacing:.32em;color:var(--gold);text-transform:uppercase}
+  .card h3{font-size:21px;margin:8px 0 10px;font-weight:700;letter-spacing:-0.01em}
   .card p{font-size:14px;line-height:1.55;color:#c5beae;margin:0 0 18px}
-  .card .go{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
-  .card .preview{width:100%;height:120px;border-radius:8px;margin-bottom:16px;display:flex;align-items:center;justify-content:center;background:#0d0c0a;border:1px solid var(--line);font-size:32px}
-  .step{display:flex;gap:16px;margin:18px 0}
-  .step .n{flex:0 0 28px;height:28px;border-radius:999px;background:rgba(212,179,110,.15);border:1px solid var(--gold);color:var(--gold);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
-  .step .body{font-size:15px;line-height:1.6;color:#d4cebd}
-  .marker-row{display:grid;gap:24px;grid-template-columns:1fr;align-items:center}
-  @media(min-width:720px){.marker-row{grid-template-columns:280px 1fr}}
-  .marker-card{background:#fff;border-radius:12px;padding:18px;display:flex;flex-direction:column;align-items:center}
-  .marker-card img{width:100%;height:auto;display:block}
-  .marker-card .lbl{margin-top:10px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#0d0c0a;font-weight:700}
-  .note{font-size:13px;line-height:1.6;color:var(--dim);background:rgba(255,255,255,.02);border-left:2px solid var(--gold);padding:14px 16px;border-radius:0 8px 8px 0;margin:16px 0}
-  footer{padding:48px 0 0;color:var(--dim);font-size:12px;letter-spacing:.04em;text-align:center}
+  .card .go{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+  .preview{width:100%;aspect-ratio:16/10;border-radius:10px;margin-bottom:16px;display:flex;align-items:center;justify-content:center;background:#0a0907;border:1px solid var(--line);position:relative;overflow:hidden}
+  .preview svg{width:64%;height:64%}
+  footer{padding:48px 0 0;color:var(--dim);font-size:12px;letter-spacing:.04em;text-align:center;line-height:1.7}
   a{color:var(--gold)}
-  .tag{display:inline-block;font-size:10px;letter-spacing:.2em;text-transform:uppercase;border:1px solid var(--line);padding:3px 8px;border-radius:999px;color:var(--dim);margin-right:6px;margin-bottom:6px}
+  .tag{display:inline-block;font-size:10px;letter-spacing:.22em;text-transform:uppercase;border:1px solid var(--line);padding:3px 9px;border-radius:999px;color:var(--dim);margin-right:6px;margin-bottom:6px}
 </style>
 </head>
 <body>
@@ -48,8 +41,8 @@
   <header>
     <div class="eyebrow">argenx · VYVGART HCP · Pitch prototype</div>
     <h1>Real Reasons,<br/><em>activated.</em></h1>
-    <p class="lede">Four working WebAR prototypes — each demonstrates a different way the existing cube comp can come alive when scanned. Run them on any modern phone. No app install. Camera permission required.</p>
-    <div class="meta">Prototypes are intentionally rough — placeholder geometry standing in for real consented patient content. The mechanic is the point.</div>
+    <p class="lede">Four interactive 3D demos showing how the existing cube comp can come alive — open, explode, become a portal, speak. Tap any card. Tap the screen to replay.</p>
+    <div class="meta">Works in any browser, on any phone or laptop. No app, no permissions, no marker.</div>
   </header>
 
   <section>
@@ -57,113 +50,94 @@
     <div class="grid">
 
       <a class="card" href="01-cube-opens.html">
-        <div class="preview" aria-hidden="true">📦 → 🌅</div>
-        <div class="num">Prototype 01</div>
+        <div class="preview">
+          <svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">
+            <rect x="32" y="14" width="36" height="36" fill="#d4b36e" opacity="0.6" rx="2"/>
+            <rect x="38" y="20" width="24" height="24" fill="#b89656" rx="2"/>
+            <circle cx="50" cy="32" r="6" fill="#f5efe0" opacity="0.85"/>
+          </svg>
+        </div>
+        <div class="num">Demo 01</div>
         <h3>Cube Opens</h3>
-        <p>The cube unfolds origami-style on detection, revealing a patient portrait + their real reason inside. The "drill in" mechanic Ron sketched.</p>
-        <span>
-          <span class="tag">Drill-in</span>
-          <span class="tag">Reveal</span>
-        </span>
-        <div class="go">Open prototype →</div>
+        <p>The cube unfolds origami-style and reveals a patient portrait + their real reason inside. The drill-in moment.</p>
+        <span><span class="tag">Reveal</span><span class="tag">Patient story</span></span>
+        <div class="go">Open demo →</div>
       </a>
 
       <a class="card" href="02-mg-adl-explode.html">
-        <div class="preview" aria-hidden="true">📦 → 🔢</div>
-        <div class="num">Prototype 02</div>
+        <div class="preview">
+          <svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">
+            <g>
+              <rect x="14" y="22" width="10" height="10" fill="#d4b36e" rx="1"/>
+              <rect x="32" y="10" width="10" height="10" fill="#c8a464" rx="1"/>
+              <rect x="50" y="6" width="10" height="10" fill="#dcb978" rx="1"/>
+              <rect x="68" y="14" width="10" height="10" fill="#b89656" rx="1"/>
+              <rect x="76" y="32" width="10" height="10" fill="#a88846" rx="1"/>
+              <rect x="58" y="42" width="10" height="10" fill="#9c7e3e" rx="1"/>
+              <rect x="34" y="42" width="10" height="10" fill="#bfa05a" rx="1"/>
+              <rect x="14" y="36" width="10" height="10" fill="#e6c688" rx="1"/>
+            </g>
+          </svg>
+        </div>
+        <div class="num">Demo 02</div>
         <h3>MG-ADL Explode</h3>
-        <p>One cube becomes the eight MG-ADL items. Talking, chewing, swallowing, brushing, rising, breathing, eyelid, vision — orbiting the marker as their own labelled cubes.</p>
-        <span>
-          <span class="tag">Clinical</span>
-          <span class="tag">Mnemonic</span>
-        </span>
-        <div class="go">Open prototype →</div>
+        <p>One cube becomes 8 labeled mini-cubes — talking, chewing, swallowing, brushing, rising, breathing, eyelid, vision.</p>
+        <span><span class="tag">Clinical</span><span class="tag">Mnemonic</span></span>
+        <div class="go">Open demo →</div>
       </a>
 
       <a class="card" href="03-portal-cube.html">
-        <div class="preview" aria-hidden="true">📦 → 🚪</div>
-        <div class="num">Prototype 03</div>
+        <div class="preview">
+          <svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">
+            <rect x="22" y="8" width="56" height="44" fill="none" stroke="#d4b36e" stroke-width="2" rx="3" opacity="0.7"/>
+            <rect x="30" y="16" width="40" height="28" fill="#a8754a" rx="2"/>
+            <rect x="55" y="22" width="12" height="9" fill="#fadea0"/>
+            <rect x="32" y="36" width="36" height="6" fill="#1a0e08"/>
+            <circle cx="40" cy="33" r="2" fill="#1a0e08"/>
+          </svg>
+        </div>
+        <div class="num">Demo 03</div>
         <h3>Portal Cube</h3>
-        <p>The cube becomes a window into a patient's day — peer through the front face to see her kitchen, her mug of tea, the morning light. Step-into-the-day metaphor.</p>
-        <span>
-          <span class="tag">Immersive</span>
-          <span class="tag">Empathy</span>
-        </span>
-        <div class="go">Open prototype →</div>
+        <p>The camera pushes through the cube into a patient's morning — kitchen, kettle, window light. Step inside their day.</p>
+        <span><span class="tag">Immersive</span><span class="tag">Empathy</span></span>
+        <div class="go">Open demo →</div>
       </a>
 
       <a class="card" href="04-voice-cube.html">
-        <div class="preview" aria-hidden="true">📦 → 🔊</div>
-        <div class="num">Prototype 04</div>
+        <div class="preview">
+          <svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">
+            <rect x="38" y="18" width="24" height="24" fill="#d4b36e" rx="2"/>
+            <circle cx="50" cy="30" r="14" fill="none" stroke="#d4b36e" stroke-width="1" opacity="0.7"/>
+            <circle cx="50" cy="30" r="20" fill="none" stroke="#d4b36e" stroke-width="0.8" opacity="0.45"/>
+            <circle cx="50" cy="30" r="26" fill="none" stroke="#d4b36e" stroke-width="0.6" opacity="0.25"/>
+          </svg>
+        </div>
+        <div class="num">Demo 04</div>
         <h3>Voice Cube</h3>
-        <p>The cube speaks. Concentric rings pulse out as a patient quote plays in their voice. Demonstrates the audio-cube layer — the campaign gains a voice without needing video everywhere.</p>
-        <span>
-          <span class="tag">Audio</span>
-          <span class="tag">Voice</span>
-        </span>
-        <div class="go">Open prototype →</div>
+        <p>The cube speaks. Concentric rings pulse to the voice as a real reason plays in the patient's words. Tap to start.</p>
+        <span><span class="tag">Audio</span><span class="tag">Voice</span></span>
+        <div class="go">Open demo →</div>
       </a>
 
-    </div>
-  </section>
-
-  <section>
-    <h2>How to demo (90 seconds)</h2>
-
-    <div class="step">
-      <div class="n">1</div>
-      <div class="body">Open this page on a <b>laptop</b> and a <b>phone</b>. The laptop will display the AR marker; the phone will run the AR.</div>
-    </div>
-    <div class="step">
-      <div class="n">2</div>
-      <div class="body">On the laptop, scroll down to the marker below and make it large on screen. (Or print it on plain paper — works either way.)</div>
-    </div>
-    <div class="step">
-      <div class="n">3</div>
-      <div class="body">On the phone, open one of the four prototypes. Allow camera access when prompted. <b>For Voice Cube, also tap the gold button to enable speech.</b></div>
-    </div>
-    <div class="step">
-      <div class="n">4</div>
-      <div class="body">Point the phone camera at the marker. The AR experience plays on top of it. Hold steady — best results in good lighting, marker fully visible.</div>
-    </div>
-
-    <div class="note"><b>Important:</b> WebAR requires HTTPS for camera access. Opening these files locally (file://) will not work — the prototypes must be served from an HTTPS URL. Ask Claude to deploy them to Vercel for a one-tap demo link, or run a local HTTPS server (e.g., <code>npx serve -s . --ssl-cert cert.pem --ssl-key key.pem</code>).</div>
-  </section>
-
-  <section>
-    <h2>The marker</h2>
-    <div class="marker-row">
-      <div class="marker-card">
-        <img src="https://raw.githack.com/AR-js-org/AR.js/master/data/images/hiro.png" alt="HIRO marker" />
-        <div class="lbl">Scan this</div>
-      </div>
-      <div>
-        <p style="margin:0 0 12px;font-size:15px;line-height:1.6;color:#d4cebd">This is the <b>HIRO marker</b> — the AR.js standard test pattern. The four prototypes are tracking it as a stand-in for the real campaign cube comp.</p>
-        <p style="margin:0 0 12px;font-size:15px;line-height:1.6;color:#d4cebd">In production, this marker is replaced with the actual stacked-cube image from the campaign — meaning <b>any printed cube</b> (sales aid, journal ad, conference badge, leave-behind) becomes a scannable AR trigger. The HCP doesn't see a QR code; they see the campaign.</p>
-        <p style="margin:0;font-size:13px;color:var(--dim)">Tracking the brand image instead of HIRO requires a one-time NFT or MindAR descriptor compile — a sub-day production task once the cube comp is finalized.</p>
-      </div>
     </div>
   </section>
 
   <section>
     <h2>What's real vs. placeholder</h2>
-    <div class="step">
-      <div class="n">✓</div>
-      <div class="body"><b>Real:</b> the AR mechanics. Image-target detection, 3D scene composition, animation orchestration, audio synthesis, the user flow on a phone — all working.</div>
-    </div>
-    <div class="step">
-      <div class="n">○</div>
-      <div class="body"><b>Placeholder:</b> patient identities, photography, voice talent, brand color tokens, the cube target image. Standing in until we have argenx brand guidelines, MLR-cleared content, and consented patient assets.</div>
-    </div>
-    <div class="step">
-      <div class="n">→</div>
-      <div class="body"><b>What "production" looks like:</b> swap HIRO for the real cube comp; replace the Unsplash placeholder portrait with documentary photography of a consented patient; commission real audio recordings; wire to a CMS so each printed cube can carry its own content payload.</div>
-    </div>
+    <p style="font-size:14px;line-height:1.7;color:#c5beae;margin:0 0 12px">
+      <b style="color:var(--gold)">Real:</b> the cube system, the animation language, the four mechanics, the visual language. Each demo is a working interactive 3D scene that runs entirely in the browser.
+    </p>
+    <p style="font-size:14px;line-height:1.7;color:#c5beae;margin:0 0 12px">
+      <b style="color:var(--gold)">Placeholder:</b> patient identities, photography, voice talent, brand color tokens. Standing in until we have argenx brand guidelines, MLR-cleared content, and consented patient assets.
+    </p>
+    <p style="font-size:14px;line-height:1.7;color:#c5beae;margin:0">
+      <b style="color:var(--gold)">In production:</b> swap placeholder portraits for documentary photography of real consented patients, replace synthesized voices with real recordings, brand-correct colors and typography to argenx spec, and wire the cubes to a CMS so each one can carry its own MLR-approved content payload.
+    </p>
   </section>
 
   <footer>
     Internal pitch prototype · argenx VYVGART HCP — Real Reasons evolution<br/>
-    A-Frame + AR.js · Tested on iOS Safari and Android Chrome
+    Built with A-Frame · Tested on iOS Safari, Android Chrome, and desktop browsers
   </footer>
 </div>
 </body>
