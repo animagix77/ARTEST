@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Real Reasons — AR Portal (iPhone)</title>
+<style>
+  :root{
+    --bg:#0d0c0a; --ink:#f5efe0; --gold:#d4b36e; --dim:#8a8278; --line:rgba(245,239,224,.12);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
+  body{background:radial-gradient(ellipse at 50% 0%, #1c1812 0%, #0d0c0a 60%, #050403 100%)}
+  .wrap{max-width:560px;margin:0 auto;padding:max(36px,env(safe-area-inset-top)) 24px max(48px,env(safe-area-inset-bottom));text-align:center}
+  #back{position:fixed;top:max(14px,env(safe-area-inset-top));left:14px;z-index:9999;background:rgba(0,0,0,.5);color:#f5efe0;padding:8px 12px;border-radius:999px;text-decoration:none;font-size:11px;letter-spacing:.08em;text-transform:uppercase;border:1px solid rgba(245,239,224,.2);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+  .eyebrow{color:var(--gold);font-size:11px;letter-spacing:.32em;text-transform:uppercase;font-weight:600;margin-top:16px}
+  h1{font-size:clamp(34px,7vw,56px);line-height:1.05;margin:14px 0 18px;font-weight:700;letter-spacing:-0.02em}
+  h1 em{font-style:normal;color:var(--gold)}
+  .lede{font-size:16px;line-height:1.55;color:#d4cebd;margin:0 auto 36px;max-width:46ch}
+  .ar-link{display:block;margin:24px auto 12px;width:min(360px,90%);text-decoration:none}
+  .ar-link img{display:block;width:100%;height:auto;border-radius:18px;border:0.5px solid rgba(212,179,110,.3)}
+  .cta{display:inline-block;margin-top:8px;background:#d4b36e;color:#0d0c0a;padding:18px 28px;border-radius:999px;font-size:13px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;font-family:inherit;text-decoration:none;box-shadow:0 12px 32px rgba(212,179,110,.35);border:none;cursor:pointer}
+  .cta::before{content:"▶  ";font-size:11px;vertical-align:middle}
+  .ios-only{display:none}
+  body.is-ios .ios-only{display:block}
+  body.is-ios .non-ios{display:none}
+  .non-ios{margin:32px 0;padding:18px;border:1px solid var(--line);border-radius:14px;background:rgba(212,179,110,.05);font-size:14px;line-height:1.55;color:#c5beae;text-align:left}
+  .non-ios b{color:var(--gold);font-weight:600}
+  .steps{margin:36px auto 0;max-width:380px;text-align:left}
+  .steps h2{font-size:11px;letter-spacing:.28em;color:var(--gold);text-transform:uppercase;font-weight:600;margin:0 0 18px;text-align:center}
+  .step{display:flex;gap:14px;margin:14px 0;align-items:flex-start}
+  .step .n{flex:0 0 26px;height:26px;border-radius:999px;border:1px solid var(--gold);color:var(--gold);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .step .body{font-size:14px;line-height:1.5;color:#d4cebd}
+  footer{margin-top:48px;color:var(--dim);font-size:11px;letter-spacing:.1em;text-align:center}
+  /* Visual hero — gold cube SVG */
+  .hero{margin:18px auto 8px;width:200px;height:200px;display:block}
+</style>
+</head>
+<body>
+<a id="back" href="index.html">← All</a>
+<div class="wrap">
+
+  <svg class="hero" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#dcb978"/>
+        <stop offset="100%" stop-color="#9c7e3e"/>
+      </linearGradient>
+      <linearGradient id="warm" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#fadea0" stop-opacity="0.9"/>
+        <stop offset="100%" stop-color="#a8754a"/>
+      </linearGradient>
+    </defs>
+    <!-- isometric cube outline -->
+    <polygon points="100,30 170,70 170,150 100,190 30,150 30,70" fill="url(#g)" opacity="0.18" stroke="#d4b36e" stroke-width="1.5"/>
+    <!-- inner glow showing through -->
+    <polygon points="100,55 145,80 145,135 100,160 55,135 55,80" fill="url(#warm)" opacity="0.85"/>
+    <!-- window inside -->
+    <rect x="105" y="92" width="28" height="22" fill="#fadea0" opacity="0.95" rx="1"/>
+    <!-- counter -->
+    <rect x="62" y="125" width="78" height="6" fill="#1a0e08" opacity="0.85"/>
+    <!-- mug silhouette -->
+    <circle cx="92" cy="121" r="3" fill="#1a0e08"/>
+    <!-- kettle silhouette -->
+    <rect x="70" y="116" width="6" height="10" fill="#1a0e08" rx="1"/>
+  </svg>
+
+  <div class="eyebrow">Demo 05 · AR Portal</div>
+  <h1>Step into a<br/><em>real reason.</em></h1>
+  <p class="lede">A patient's morning, anchored to the floor in front of you. Walk through the cube. Look around inside her kitchen.</p>
+
+  <!-- AR Quick Look launch link (iPhone Safari) -->
+  <!-- Required: rel="ar", contain only one <img>, href to .usdz -->
+  <div class="ios-only">
+    <a class="ar-link" rel="ar" href="portal-cube.usdz">
+      <img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 200'%3E%3Crect width='800' height='200' fill='%23d4b36e'/%3E%3Ctext x='400' y='115' font-family='-apple-system,sans-serif' font-size='32' font-weight='700' fill='%230d0c0a' text-anchor='middle' letter-spacing='4'%3E%E2%96%B6  TAP TO LAUNCH AR%3C/text%3E%3C/svg%3E" alt="Launch portal in AR" />
+    </a>
+    <div style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);margin-top:8px">Hold phone up. Tap floor. Walk through.</div>
+  </div>
+
+  <div class="non-ios">
+    <b>This demo runs on iPhone Safari.</b><br/>
+    AR Quick Look is iOS-native. To experience the portal, open this page on an iPhone in Safari, then tap the gold launch button. On Android or desktop, you can <a href="portal-cube.usdz" download style="color:var(--gold)">download the USDZ file</a> to view in another tool, or watch a screen recording from the team.
+  </div>
+
+  <div class="steps ios-only">
+    <h2>How to demo</h2>
+    <div class="step"><div class="n">1</div><div class="body">Tap the gold "Launch AR" button above. AR Quick Look opens fullscreen.</div></div>
+    <div class="step"><div class="n">2</div><div class="body">Move your phone slowly to scan the room. A reticle appears on the floor.</div></div>
+    <div class="step"><div class="n">3</div><div class="body">Tap the floor where you want the portal to land. The honey-gold cube places itself there.</div></div>
+    <div class="step"><div class="n">4</div><div class="body">Walk forward. The cube becomes a doorway. Step through. Look around inside the patient's morning.</div></div>
+    <div class="step"><div class="n">5</div><div class="body">Pinch to scale, drag to reposition, swipe up for the share/exit menu.</div></div>
+  </div>
+
+  <footer>argenx · VYVGART HCP · Pitch prototype<br/>USDZ generated for iOS Quick Look</footer>
+</div>
+
+<script>
+  // Detect iOS Safari (and Safari-equivalent in-app browsers)
+  const ua = navigator.userAgent;
+  const isIOS = /iPad|iPhone|iPod/.test(ua) || (ua.includes('Mac') && navigator.maxTouchPoints > 1);
+  if (isIOS) document.body.classList.add('is-ios');
+</script>
+
+</body>
+</html>
