@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
+<title>Real Reasons AR — 04 Voice Cube</title>
+<script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+<script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+<style>
+  html,body{margin:0;padding:0;background:#0d0c0a;color:#f5efe0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;height:100%;overflow:hidden}
+  #hint{position:fixed;left:0;right:0;bottom:24px;text-align:center;z-index:9999;pointer-events:none;text-shadow:0 1px 4px rgba(0,0,0,.6);font-size:14px;letter-spacing:.04em}
+  #hint b{color:#d4b36e}
+  #back{position:fixed;top:14px;left:14px;z-index:9999;background:rgba(0,0,0,.5);color:#f5efe0;padding:8px 12px;border-radius:999px;text-decoration:none;font-size:12px;letter-spacing:.06em;text-transform:uppercase;border:1px solid rgba(245,239,224,.2)}
+  #start{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9999;background:#d4b36e;color:#0d0c0a;border:none;padding:18px 28px;border-radius:999px;font-size:14px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;box-shadow:0 8px 32px rgba(212,179,110,.4);cursor:pointer}
+  .a-enter-vr,.a-enter-ar{display:none !important}
+  body.started #start{display:none}
+  body:not(.started) #hint{display:none}
+</style>
+</head>
+<body>
+<a id="back" href="index.html">← All prototypes</a>
+<button id="start">Tap to enable voice + camera</button>
+<div id="hint">Point at the <b>HIRO marker</b>. The cube will <b>speak</b>.</div>
+
+<a-scene
+  embedded
+  vr-mode-ui="enabled: false"
+  arjs="sourceType: webcam; debugUIEnabled: false;"
+  renderer="antialias: true; alpha: true;">
+
+  <a-marker preset="hiro" id="marker">
+
+    <!-- Voice cube: glowing, breathing -->
+    <a-entity id="voice-cube" position="0 0.6 0">
+      <a-box id="cube-body" width="1" height="1" depth="1"
+             material="color:#d4b36e; opacity:.9; transparent:true; emissive:#d4b36e; emissiveIntensity:.55"
+             animation__breathe="property: scale; to: 1.06 1.06 1.06; dir: alternate; loop: true; dur: 1800; easing: easeInOutSine"
+             animation__spin="property: rotation; to: 0 360 0; loop: true; dur: 14000; easing: linear"></a-box>
+
+      <!-- Concentric pulse rings while speaking -->
+      <a-ring id="ring1" radius-inner="0.6" radius-outer="0.62" position="0 0 0"
+              material="color:#d4b36e; emissive:#d4b36e; emissiveIntensity:1; opacity:0; transparent:true; side:double"
+              rotation="-90 0 0"></a-ring>
+      <a-ring id="ring2" radius-inner="0.85" radius-outer="0.87" position="0 0 0"
+              material="color:#d4b36e; emissive:#d4b36e; emissiveIntensity:1; opacity:0; transparent:true; side:double"
+              rotation="-90 0 0"></a-ring>
+      <a-ring id="ring3" radius-inner="1.10" radius-outer="1.12" position="0 0 0"
+              material="color:#d4b36e; emissive:#d4b36e; emissiveIntensity:1; opacity:0; transparent:true; side:double"
+              rotation="-90 0 0"></a-ring>
+
+      <!-- Caption that updates with speech -->
+      <a-text id="speak-caption" value=""
+              position="0 -0.95 0" align="center" width="2.6"
+              color="#f5efe0" font="https://cdn.aframe.io/fonts/mozillavr.fnt"
+              opacity="0"></a-text>
+      <a-text id="speak-name" value="MARCUS — gMG since 2017"
+              position="0 0.9 0" align="center" width="2.6"
+              color="#d4b36e" font="https://cdn.aframe.io/fonts/mozillavr.fnt"
+              opacity="0"></a-text>
+    </a-entity>
+
+  </a-marker>
+
+  <a-entity camera></a-entity>
+</a-scene>
+
+<script>
+  // Lines spoken by the cube
+  const LINES = [
+    "Real Reason number five.",
+    "I'm presenting at work again.",
+    "I'm finishing my sentences.",
+    "I'm not the patient in the room. I'm the man.",
+  ];
+
+  let running = false;
+  let started = false;
+  let voicesReady = false;
+
+  function pickVoice() {
+    const all = speechSynthesis.getVoices();
+    return all.find(v => /en[-_]US/i.test(v.lang) && /male|david|alex|daniel/i.test(v.name)) ||
+           all.find(v => /en/i.test(v.lang)) || all[0];
+  }
+  speechSynthesis.onvoiceschanged = () => { voicesReady = true; };
+
+  function pulseRings() {
+    ['ring1','ring2','ring3'].forEach((id, i) => {
+      const el = document.getElementById(id);
+      el.removeAttribute('animation__pulse');
+      setTimeout(() => {
+        el.setAttribute('animation__pulse',
+          'property: material.opacity; from: 0.9; to: 0; dur: 1400; easing: easeOutCubic');
+      }, i * 280);
+    });
+  }
+
+  function speakSequence() {
+    if (!started) return;
+    if (running) return;
+    running = true;
+
+    const cap = document.getElementById('speak-caption');
+    const nm  = document.getElementById('speak-name');
+    nm.setAttribute('animation__in', 'property: opacity; from: 0; to: 1; dur: 600');
+
+    let i = 0;
+    function next() {
+      if (i >= LINES.length) {
+        // reset
+        nm.setAttribute('animation__out','property: opacity; from: 1; to: 0; dur: 600');
+        cap.setAttribute('animation__out','property: opacity; from: 1; to: 0; dur: 600');
+        setTimeout(() => { running = false; }, 1500);
+        return;
+      }
+      const line = LINES[i++];
+      cap.setAttribute('value', line);
+      cap.setAttribute('animation__line', 'property: opacity; from: 0; to: 1; dur: 350');
+
+      const u = new SpeechSynthesisUtterance(line);
+      const v = pickVoice();
+      if (v) u.voice = v;
+      u.rate = 0.92;
+      u.pitch = 0.95;
+      u.volume = 1;
+      u.onstart = pulseRings;
+      u.onend = () => setTimeout(next, 600);
+      speechSynthesis.speak(u);
+    }
+    next();
+  }
+
+  document.getElementById('start').addEventListener('click', () => {
+    started = true;
+    document.body.classList.add('started');
+    // Warm up speech synth on iOS — it requires a user gesture
+    const warmup = new SpeechSynthesisUtterance(' ');
+    warmup.volume = 0;
+    speechSynthesis.speak(warmup);
+    // Force voices to populate
+    speechSynthesis.getVoices();
+  });
+
+  document.getElementById('marker').addEventListener('markerFound', () => {
+    if (started) speakSequence();
+  });
+</script>
+</body>
+</html>

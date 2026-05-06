@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
+<title>Real Reasons AR — 02 MG-ADL Explode</title>
+<script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+<script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+<style>
+  html,body{margin:0;padding:0;background:#0d0c0a;color:#f5efe0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;height:100%;overflow:hidden}
+  #hint{position:fixed;left:0;right:0;bottom:24px;text-align:center;z-index:9999;pointer-events:none;text-shadow:0 1px 4px rgba(0,0,0,.6);font-size:14px;letter-spacing:.04em}
+  #hint b{color:#d4b36e}
+  #back{position:fixed;top:14px;left:14px;z-index:9999;background:rgba(0,0,0,.5);color:#f5efe0;padding:8px 12px;border-radius:999px;text-decoration:none;font-size:12px;letter-spacing:.06em;text-transform:uppercase;border:1px solid rgba(245,239,224,.2)}
+  .a-enter-vr,.a-enter-ar{display:none !important}
+</style>
+</head>
+<body>
+<a id="back" href="index.html">← All prototypes</a>
+<div id="hint">Point at the <b>HIRO marker</b>. The cube becomes the <b>8 MG-ADL items</b>.</div>
+
+<a-scene
+  embedded
+  vr-mode-ui="enabled: false"
+  arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+  renderer="antialias: true; alpha: true;">
+
+  <a-marker preset="hiro" id="marker">
+
+    <!-- Parent cube that splits -->
+    <a-entity id="parent-cube" position="0 0.5 0">
+      <a-box width="1" height="1" depth="1"
+             material="color:#d4b36e; opacity:.85; transparent:true; emissive:#3a2a10; emissiveIntensity:.3"
+             animation__spin="property: rotation; to: 0 360 0; loop: true; dur: 6000; easing: linear"></a-box>
+    </a-entity>
+
+    <!-- 8 MG-ADL mini cubes, will be revealed -->
+    <a-entity id="mini-cubes" visible="false">
+      <!-- arranged in a ring around the marker, slightly above -->
+    </a-entity>
+
+  </a-marker>
+
+  <a-entity camera></a-entity>
+</a-scene>
+
+<script>
+  const ITEMS = [
+    { label: "TALKING",   color: "#d4b36e" },
+    { label: "CHEWING",   color: "#c8a464" },
+    { label: "SWALLOW",   color: "#b89656" },
+    { label: "BRUSHING",  color: "#a88846" },
+    { label: "RISING",    color: "#dcb978" },
+    { label: "BREATHING", color: "#e6c688" },
+    { label: "EYELID",    color: "#9c7e3e" },
+    { label: "VISION",    color: "#bfa05a" },
+  ];
+
+  const container = document.getElementById('mini-cubes');
+  const RADIUS = 1.4;
+  const HEIGHT = 0.6;
+
+  ITEMS.forEach((item, i) => {
+    const angle = (i / ITEMS.length) * Math.PI * 2;
+    const x = Math.cos(angle) * RADIUS;
+    const z = Math.sin(angle) * RADIUS;
+    const yawDeg = -(angle * 180 / Math.PI) + 90;
+
+    const wrap = document.createElement('a-entity');
+    wrap.setAttribute('position', `${x} ${HEIGHT} ${z}`);
+    wrap.setAttribute('rotation', `0 ${yawDeg} 0`);
+
+    // floating cube
+    const box = document.createElement('a-box');
+    box.setAttribute('width', '0.45');
+    box.setAttribute('height', '0.45');
+    box.setAttribute('depth', '0.45');
+    box.setAttribute('material', `color:${item.color}; opacity:.9; transparent:true; emissive:${item.color}; emissiveIntensity:.25`);
+    box.setAttribute('animation__bob', `property: position; to: 0 0.08 0; dir: alternate; loop: true; dur: ${1800 + i*120}; easing: easeInOutSine`);
+    box.setAttribute('animation__spin', `property: rotation; to: 0 360 0; loop: true; dur: ${5000 + i*300}; easing: linear`);
+    wrap.appendChild(box);
+
+    // label
+    const label = document.createElement('a-text');
+    label.setAttribute('value', item.label);
+    label.setAttribute('position', '0 -0.45 0');
+    label.setAttribute('align', 'center');
+    label.setAttribute('width', '2');
+    label.setAttribute('color', '#f5efe0');
+    label.setAttribute('font', 'https://cdn.aframe.io/fonts/mozillavr.fnt');
+    wrap.appendChild(label);
+
+    container.appendChild(wrap);
+  });
+
+  let running = false;
+  function runSequence() {
+    if (running) return;
+    running = true;
+
+    const parent = document.getElementById('parent-cube');
+    const parentBox = parent.querySelector('a-box');
+
+    // Pulse the parent
+    parentBox.setAttribute('animation__pulse', 'property: scale; to: 1.15 1.15 1.15; dir: alternate; loop: 2; dur: 600; easing: easeInOutSine');
+
+    // Then explode/dissolve
+    setTimeout(() => {
+      parentBox.setAttribute('animation__explode', 'property: scale; to: 0.01 0.01 0.01; dur: 700; easing: easeInQuart');
+      parentBox.setAttribute('animation__fade', 'property: material.opacity; to: 0; dur: 700');
+    }, 1300);
+
+    // Reveal mini cubes from center, fly to ring positions
+    setTimeout(() => {
+      container.setAttribute('visible', 'true');
+      // Animate each mini-cube wrap from origin to its ring position
+      [...container.children].forEach((wrap, i) => {
+        const targetPos = wrap.getAttribute('position');
+        wrap.setAttribute('position', `0 0.5 0`);
+        wrap.setAttribute('animation__deploy',
+          `property: position; to: ${targetPos.x} ${targetPos.y} ${targetPos.z}; dur: 900; delay: ${i*70}; easing: easeOutCubic`);
+      });
+    }, 2000);
+
+    // Hold, then reset
+    setTimeout(() => {
+      container.setAttribute('visible', 'false');
+      [...container.children].forEach(w => w.removeAttribute('animation__deploy'));
+      parentBox.removeAttribute('animation__explode');
+      parentBox.removeAttribute('animation__fade');
+      parentBox.removeAttribute('animation__pulse');
+      parentBox.setAttribute('scale', '1 1 1');
+      parentBox.setAttribute('material', 'opacity', 0.85);
+      running = false;
+    }, 12000);
+  }
+
+  document.getElementById('marker').addEventListener('markerFound', runSequence);
+</script>
+</body>
+</html>

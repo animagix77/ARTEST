@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
+<title>Real Reasons AR — 01 Cube Opens</title>
+<script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+<script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+<style>
+  html,body{margin:0;padding:0;background:#0d0c0a;color:#f5efe0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;height:100%;overflow:hidden}
+  #hint{position:fixed;left:0;right:0;bottom:24px;text-align:center;z-index:9999;pointer-events:none;text-shadow:0 1px 4px rgba(0,0,0,.6);font-size:14px;letter-spacing:.04em}
+  #hint b{color:#d4b36e}
+  #back{position:fixed;top:14px;left:14px;z-index:9999;background:rgba(0,0,0,.5);color:#f5efe0;padding:8px 12px;border-radius:999px;text-decoration:none;font-size:12px;letter-spacing:.06em;text-transform:uppercase;border:1px solid rgba(245,239,224,.2)}
+  .a-enter-vr,.a-enter-ar{display:none !important}
+</style>
+</head>
+<body>
+<a id="back" href="index.html">← All prototypes</a>
+<div id="hint">Point at the <b>HIRO marker</b>. The cube will open and reveal a patient.</div>
+
+<a-scene
+  embedded
+  vr-mode-ui="enabled: false"
+  arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+  renderer="antialias: true; alpha: true; logarithmicDepthBuffer: true;">
+
+  <a-assets>
+    <img id="portraitTexture" crossorigin="anonymous"
+         src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=400&h=400&fit=crop&crop=faces" />
+  </a-assets>
+
+  <a-marker preset="hiro" id="marker">
+    <a-entity id="root" rotation="0 0 0">
+
+      <!-- The cube (6 faces, semi-translucent honey/cream) -->
+      <a-entity id="cube">
+        <a-plane id="face-front"  position="0 0 0.5"  rotation="0 0 0"     width="1" height="1" material="color:#d4b36e; opacity:.85; side:double; emissive:#3a2a10; emissiveIntensity:.4"></a-plane>
+        <a-plane id="face-back"   position="0 0 -0.5" rotation="0 180 0"   width="1" height="1" material="color:#b89656; opacity:.85; side:double; emissive:#3a2a10; emissiveIntensity:.4"></a-plane>
+        <a-plane id="face-right"  position="0.5 0 0"  rotation="0 90 0"    width="1" height="1" material="color:#c8a464; opacity:.85; side:double; emissive:#3a2a10; emissiveIntensity:.4"></a-plane>
+        <a-plane id="face-left"   position="-0.5 0 0" rotation="0 -90 0"   width="1" height="1" material="color:#a88846; opacity:.85; side:double; emissive:#3a2a10; emissiveIntensity:.4"></a-plane>
+        <a-plane id="face-top"    position="0 0.5 0"  rotation="-90 0 0"   width="1" height="1" material="color:#dcb978; opacity:.85; side:double; emissive:#3a2a10; emissiveIntensity:.4"></a-plane>
+        <a-plane id="face-bottom" position="0 -0.5 0" rotation="90 0 0"    width="1" height="1" material="color:#9c7e3e; opacity:.85; side:double; emissive:#3a2a10; emissiveIntensity:.4"></a-plane>
+      </a-entity>
+
+      <!-- The patient reveal (hidden until cube opens) -->
+      <a-entity id="reveal" visible="false" position="0 0.05 0">
+        <a-plane id="portrait" width="0.85" height="0.85"
+                 material="src:#portraitTexture; opacity:0; transparent:true; side:double"
+                 position="0 0 0.001"></a-plane>
+        <a-plane width="1" height="1" position="0 0 -0.005"
+                 material="color:#f5efe0; opacity:0; transparent:true; side:double"></a-plane>
+        <a-text id="quote-name" value="LANA — gMG since 2019"
+                position="0 -0.55 0.01" align="center" width="2.4"
+                color="#d4b36e" font="https://cdn.aframe.io/fonts/mozillavr.fnt"
+                opacity="0"></a-text>
+        <a-text id="quote-line" value='"My granddaughter wants to call me, and I&apos;m the one who picks up now."'
+                position="0 -0.72 0.01" align="center" width="2.6"
+                color="#f5efe0" font="https://cdn.aframe.io/fonts/mozillavr.fnt"
+                opacity="0"></a-text>
+        <a-text id="reason" value="REAL REASON #03"
+                position="0 0.62 0.01" align="center" width="2.6"
+                color="#d4b36e" font="https://cdn.aframe.io/fonts/mozillavr.fnt"
+                opacity="0"></a-text>
+      </a-entity>
+
+    </a-entity>
+  </a-marker>
+
+  <a-entity camera></a-entity>
+</a-scene>
+
+<script>
+  // Sequence: spin -> open -> reveal -> hold -> reset
+  const faces = {
+    front:  { el: document.getElementById('face-front'),  open: { position: '0 0 1.6',  rotation: '0 0 0'    } },
+    back:   { el: document.getElementById('face-back'),   open: { position: '0 0 -1.6', rotation: '0 180 0'  } },
+    right:  { el: document.getElementById('face-right'),  open: { position: '1.6 0 0', rotation: '0 90 0'    } },
+    left:   { el: document.getElementById('face-left'),   open: { position: '-1.6 0 0', rotation: '0 -90 0'  } },
+    top:    { el: document.getElementById('face-top'),    open: { position: '0 1.6 0', rotation: '-90 0 0'   } },
+    bottom: { el: document.getElementById('face-bottom'), open: { position: '0 -1.6 0', rotation: '90 0 0'   } },
+  };
+  const reveal = document.getElementById('reveal');
+  const portrait = document.getElementById('portrait');
+  const cream = reveal.children[1];
+  const qName = document.getElementById('quote-name');
+  const qLine = document.getElementById('quote-line');
+  const qReason = document.getElementById('reason');
+
+  let running = false;
+  function runSequence() {
+    if (running) return;
+    running = true;
+
+    // Phase 1: spin the whole cube
+    const cubeEl = document.getElementById('cube');
+    cubeEl.setAttribute('animation__spin', 'property: rotation; to: 0 360 0; dur: 1800; easing: easeInOutCubic');
+
+    // Phase 2: faces fly outward + fade
+    setTimeout(() => {
+      Object.values(faces).forEach((f, i) => {
+        f.el.setAttribute('animation__open', `property: position; to: ${f.open.position}; dur: 900; easing: easeOutQuart`);
+        f.el.setAttribute('animation__fade', `property: material.opacity; to: 0; dur: 900; delay: 300`);
+      });
+    }, 1800);
+
+    // Phase 3: reveal patient
+    setTimeout(() => {
+      reveal.setAttribute('visible', 'true');
+      portrait.setAttribute('animation__in', 'property: material.opacity; from: 0; to: 1; dur: 900');
+      cream.setAttribute('animation__in', 'property: material.opacity; from: 0; to: .6; dur: 900');
+      qReason.setAttribute('animation__in', 'property: opacity; from: 0; to: 1; dur: 700; delay: 200');
+      qName.setAttribute('animation__in', 'property: opacity; from: 0; to: 1; dur: 700; delay: 500');
+      qLine.setAttribute('animation__in', 'property: opacity; from: 0; to: 1; dur: 700; delay: 900');
+    }, 2700);
+
+    // Phase 4: hold, then reset
+    setTimeout(() => {
+      // reset faces
+      Object.entries(faces).forEach(([k,f]) => {
+        const orig = {
+          front:  '0 0 0.5',  back:  '0 0 -0.5',
+          right:  '0.5 0 0',  left:  '-0.5 0 0',
+          top:    '0 0.5 0',  bottom:'0 -0.5 0'
+        }[k];
+        f.el.removeAttribute('animation__open');
+        f.el.removeAttribute('animation__fade');
+        f.el.setAttribute('position', orig);
+        f.el.setAttribute('material', 'opacity', 0.85);
+      });
+      cubeEl.removeAttribute('animation__spin');
+      cubeEl.setAttribute('rotation','0 0 0');
+      reveal.setAttribute('visible','false');
+      portrait.setAttribute('material','opacity', 0);
+      cream.setAttribute('material','opacity', 0);
+      qName.setAttribute('opacity', 0);
+      qLine.setAttribute('opacity', 0);
+      qReason.setAttribute('opacity', 0);
+      running = false;
+    }, 9000);
+  }
+
+  const marker = document.getElementById('marker');
+  marker.addEventListener('markerFound', runSequence);
+</script>
+</body>
+</html>

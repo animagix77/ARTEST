@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+._*
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Local SSL certs (if running https locally)
+cert.pem
+key.pem
+
+# Logs
+*.log

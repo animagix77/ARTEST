@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
+<title>Real Reasons AR — 03 Portal Cube</title>
+<script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+<script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+<style>
+  html,body{margin:0;padding:0;background:#0d0c0a;color:#f5efe0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;height:100%;overflow:hidden}
+  #hint{position:fixed;left:0;right:0;bottom:24px;text-align:center;z-index:9999;pointer-events:none;text-shadow:0 1px 4px rgba(0,0,0,.6);font-size:14px;letter-spacing:.04em}
+  #hint b{color:#d4b36e}
+  #back{position:fixed;top:14px;left:14px;z-index:9999;background:rgba(0,0,0,.5);color:#f5efe0;padding:8px 12px;border-radius:999px;text-decoration:none;font-size:12px;letter-spacing:.06em;text-transform:uppercase;border:1px solid rgba(245,239,224,.2)}
+  .a-enter-vr,.a-enter-ar{display:none !important}
+</style>
+</head>
+<body>
+<a id="back" href="index.html">← All prototypes</a>
+<div id="hint">Point at the <b>HIRO marker</b>. The cube becomes a <b>window into a patient's day</b>.</div>
+
+<a-scene
+  embedded
+  vr-mode-ui="enabled: false"
+  arjs="sourceType: webcam; debugUIEnabled: false;"
+  renderer="antialias: true; alpha: true;">
+
+  <a-marker preset="hiro" id="marker">
+
+    <!-- The cube frame (hollow, only edges visible) -->
+    <a-entity id="frame" position="0 0.5 0">
+      <a-box width="1" height="1" depth="1"
+             material="color:#d4b36e; opacity:0.18; transparent:true; emissive:#d4b36e; emissiveIntensity:.35; side: double"
+             animation__hover="property: position; to: 0 0.55 0; dir: alternate; loop: true; dur: 2400; easing: easeInOutSine"></a-box>
+
+      <!-- The portal "front face" — a window cut through to the inside -->
+      <a-plane id="portal-glass" position="0 0 0.501" width="0.85" height="0.85"
+               material="color:#0d0c0a; opacity: 0.0; side: double"></a-plane>
+
+      <!-- Inside-the-cube scene: a kitchen-warm gradient + silhouettes -->
+      <a-entity id="inside-scene" visible="false" position="0 0 -0.499">
+        <!-- Warm wall -->
+        <a-plane width="3" height="3" position="0 0 -1.2"
+                 material="color:#b8845a; emissive:#b8845a; emissiveIntensity:.5; side:double"></a-plane>
+        <!-- Window light -->
+        <a-plane width="1.2" height="0.9" position="0.6 0.4 -1.18"
+                 material="color:#f9e3a8; emissive:#f9e3a8; emissiveIntensity:1; side:double"></a-plane>
+        <!-- Counter / silhouette layer -->
+        <a-plane width="3" height="0.6" position="0 -0.6 -0.8"
+                 material="color:#3a1f10; opacity:.95; emissive:#3a1f10; emissiveIntensity:.2; side:double"></a-plane>
+        <!-- Kettle silhouette -->
+        <a-cylinder radius="0.12" height="0.25" position="-0.55 -0.18 -0.6"
+                    material="color:#1a0e08; emissive:#000"></a-cylinder>
+        <!-- Mug -->
+        <a-cylinder radius="0.06" height="0.12" position="-0.15 -0.24 -0.55"
+                    material="color:#1a0e08; emissive:#000"></a-cylinder>
+        <!-- Steam -->
+        <a-sphere radius="0.04" position="-0.15 -0.05 -0.5"
+                  material="color:#f5efe0; opacity:.4; transparent:true"
+                  animation__rise="property: position; to: -0.13 0.25 -0.5; dir: alternate; loop: true; dur: 2200"></a-sphere>
+        <!-- Patient figure silhouette -->
+        <a-plane width="0.5" height="1.0" position="0.35 0 -0.7"
+                 material="color:#1a0e08; opacity:.92; transparent:true; side:double"></a-plane>
+        <!-- Caption -->
+        <a-text value="MORNING. SHE&#39;S MAKING TEA AGAIN." position="0 -0.85 -0.55"
+                align="center" width="2.3" color="#d4b36e"
+                font="https://cdn.aframe.io/fonts/mozillavr.fnt" opacity="0"
+                id="caption"></a-text>
+      </a-entity>
+
+      <!-- Edge glow rim -->
+      <a-entity position="0 0 0.502">
+        <a-ring radius-inner="0.42" radius-outer="0.50" rotation="0 0 0"
+                material="color:#d4b36e; emissive:#d4b36e; emissiveIntensity:.7; opacity:.0; transparent:true; side:double"
+                id="rim"></a-ring>
+      </a-entity>
+    </a-entity>
+
+  </a-marker>
+
+  <a-entity camera></a-entity>
+</a-scene>
+
+<script>
+  let running = false;
+  function openPortal() {
+    if (running) return;
+    running = true;
+
+    const glass = document.getElementById('portal-glass');
+    const inside = document.getElementById('inside-scene');
+    const rim = document.getElementById('rim');
+    const caption = document.getElementById('caption');
+
+    // Step 1: glass darkens / dissolves
+    glass.setAttribute('animation__open', 'property: material.opacity; from: 0; to: 0; dur: 200');
+    rim.setAttribute('animation__rim', 'property: material.opacity; from: 0; to: .9; dur: 600; easing: easeOutQuad');
+
+    // Step 2: inside scene fades in
+    setTimeout(() => {
+      inside.setAttribute('visible', 'true');
+      // pretend "depth zoom" by scaling inside scene up slowly
+      inside.setAttribute('animation__zoom', 'property: scale; from: 0.6 0.6 0.6; to: 1 1 1; dur: 1800; easing: easeOutCubic');
+    }, 400);
+
+    // Step 3: caption fades in
+    setTimeout(() => {
+      caption.setAttribute('animation__caption', 'property: opacity; from: 0; to: 1; dur: 800');
+    }, 1800);
+
+    // Reset
+    setTimeout(() => {
+      inside.setAttribute('visible', 'false');
+      inside.removeAttribute('animation__zoom');
+      caption.setAttribute('opacity', 0);
+      caption.removeAttribute('animation__caption');
+      rim.setAttribute('material', 'opacity', 0);
+      rim.removeAttribute('animation__rim');
+      running = false;
+    }, 9000);
+  }
+
+  document.getElementById('marker').addEventListener('markerFound', openPortal);
+</script>
+</body>
+</html>
